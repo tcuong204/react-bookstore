@@ -8,7 +8,13 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        nunito: ["Nunito", "sans-serif"],
+        serif: "sans-serif",
+      },
       colors: {
+        blackText: "#212121",
+        grayText: "#333333",
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
