@@ -13,6 +13,20 @@
     --foreground: #ededed;
   }
 }
+a {
+  font-size: 15px;
+  color: #333333;
+  font-family: "Nunito Sans";
+  word-break: break-word;
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  max-height: 6em;
+  padding-top: 0px;
+}
 label {
   font-size: var(--font-size-18);
   font-weight: 650;
@@ -37,7 +51,6 @@ body {
   padding-bottom: 1em;
 }
 span {
-  font-family: "Nunito Sans" !important;
   color: var(--black);
   font-size: 14px;
   padding: 4px 0;
@@ -46,8 +59,20 @@ h2 {
   font-family: sans-serif;
   font-weight: 700;
 }
+.overflow-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
+.apple-system {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }

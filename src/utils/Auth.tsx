@@ -1,3 +1,5 @@
+import axiosInstance from "@/axios/axiosConfig";
+import { headers } from "next/headers";
 import { useRouter } from "next/router";
 
 export const isLoggedIn = (): boolean => {
@@ -14,6 +16,22 @@ export const getToken = (): string | null => {
     return localStorage.getItem("token");
   }
   return null; // Khi render phía server
+};
+export const getUser = async () => {
+  const token = localStorage.getItem("token");
+  if (token === null) {
+    return;
+  }
+  let data;
+  const response = await axiosInstance
+    .get("/getUserInfo", {
+      headers: { Authorization: "Bearer " + token },
+    })
+    .then((response) => {
+      data = response.data.userData;
+    })
+    .catch();
+  return data;
 };
 export const logout = () => {
   // const router = useRouter()

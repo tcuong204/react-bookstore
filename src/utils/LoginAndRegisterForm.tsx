@@ -13,8 +13,9 @@ import * as Yup from "yup";
 import axios from "axios";
 import axiosInstance from "../axios/axiosConfig";
 import { useRouter } from "next/navigation";
+import { Slide, toast, ToastContainer } from "react-toastify";
 interface Values {
-  username: string;
+  email: string;
   password: string;
 }
 interface LoginAndRegisterFormProps {
@@ -32,15 +33,39 @@ export const LoginAndRegisterForm: React.FC<LoginAndRegisterFormProps> = ({
   ) => {
     const body = JSON.stringify(values, null, 2);
     const response = await axiosInstance
-      .post("/auth/login", body)
+      .post("/login", body)
       .then((response) => {
         const res = response;
+        console.log(response);
+
         if (res.status === 200) {
-          router.push("/");
+          toast.success("Đăng nhập thành công", {
+            position: "top-center",
+            autoClose: 1000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Slide,
+          });
+          window.localStorage.setItem("token", response?.data?.token);
+          setTimeout(() => {
+            window.location.href = "/";
+          }, 2000);
+        } else {
+          toast.error("Đăng nhập thất bại", {
+            position: "top-center",
+            autoClose: 3000,
+          });
         }
       })
       .catch((error) => {
-        console.error(error);
+        toast.error("Đăng nhập thất bại", {
+          position: "top-center",
+          autoClose: 3000,
+        });
       });
   };
   const handleRegister = async (
@@ -61,188 +86,195 @@ export const LoginAndRegisterForm: React.FC<LoginAndRegisterFormProps> = ({
       });
   };
   return (
-    <ConfigProvider
-      theme={{ components: { Tabs: { inkBarColor: "#C62027" } } }}
-    >
-      <Tabs defaultActiveKey="1" centered animated>
-        <TabPane
-          tab={<span style={{ color: "#C62027" }}>Đăng nhập</span>}
-          key="1"
-        >
-          <Formik
-            initialValues={{ username: "", password: "" }}
-            onSubmit={handleLogin}
-            validationSchema={Yup.object().shape({
-              username: Yup.string()
-                .min(6, "Mật khẩu phải có ít nhất 6 ký tự")
-                .required("Vui lòng nhập email"),
-              password: Yup.string()
-                .min(6, "Mật khẩu phải có ít nhất 6 ký tự")
-                .required("Vui lòng nhập mật khẩu"),
-            })}
-            validateOnMount={true}
+    <>
+      <ConfigProvider
+        theme={{ components: { Tabs: { inkBarColor: "#C62027" } } }}
+      >
+        <Tabs defaultActiveKey="1" centered animated>
+          <TabPane
+            tab={
+              <span style={{ color: "#C62027", fontFamily: "Nunito" }}>
+                Đăng nhập
+              </span>
+            }
+            key="1"
           >
-            {(props) => (
-              <Form onFinish={props.handleSubmit}>
-                <Form.Item
-                  layout="vertical"
-                  label="Số điện thoại/Email"
-                  className="p-4"
-                  name="name"
-                >
-                  <Input
-                    size="large"
+            <Formik
+              initialValues={{ email: "", password: "" }}
+              onSubmit={handleLogin}
+              validationSchema={Yup.object().shape({
+                email: Yup.string()
+                  .min(6, "Mật khẩu phải có ít nhất 6 ký tự")
+                  .required("Vui lòng nhập email"),
+                password: Yup.string()
+                  .min(6, "Mật khẩu phải có ít nhất 6 ký tự")
+                  .required("Vui lòng nhập mật khẩu"),
+              })}
+              validateOnMount={true}
+            >
+              {(props) => (
+                <Form onFinish={props.handleSubmit}>
+                  <Form.Item
+                    layout="vertical"
+                    label="Số điện thoại/Email"
+                    className="p-4"
                     name="name"
-                    onChange={(e) => {
-                      props.values.username = e.target.value;
-                      props.validateForm();
-                    }}
-                    value={props.values.username}
-                    placeholder="Nhập số điện thoại hoặc email"
-                  />
-                </Form.Item>
-                <Form.Item
-                  name="password"
-                  label="Mật khẩu"
-                  layout="vertical"
-                  className="p-4"
-                >
-                  <Input.Password
-                    size="large"
+                  >
+                    <Input
+                      size="large"
+                      name="name"
+                      onChange={(e) => {
+                        props.values.email = e.target.value;
+                        props.validateForm();
+                      }}
+                      value={props.values.email}
+                      placeholder="Nhập số điện thoại hoặc email"
+                    />
+                  </Form.Item>
+                  <Form.Item
                     name="password"
-                    value={props.values.password}
-                    onChange={(e) => {
-                      props.values.password = e.target.value;
-                      props.validateForm();
-                    }}
-                    placeholder="Nhập mật khẩu"
-                    iconRender={(visible) =>
-                      visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
-                    }
-                    visibilityToggle={passwordVisible}
-                    autoComplete="new-password"
-                  />
-                </Form.Item>
-                <div style={{ textAlign: "right", marginBottom: "16px" }}>
-                  <a style={{ color: "#C62027" }}>Quên mật khẩu?</a>
-                </div>
-                <Form.Item className="flex justify-center items-center">
-                  <CustomButton
-                    buttonType="primary"
-                    htmlType="submit"
-                    className="px-[4rem] text-[1.1em] !font-600"
-                    buttonText="Đăng nhập"
-                    disabled={!props.isValid}
-                    onClick={() => console.log("clicked", props.isValid)}
-                  />
-                </Form.Item>
-                <Form.Item className="flex justify-center items-center">
-                  <CustomButton
-                    buttonType="default"
-                    htmlType="button"
-                    className="w-64 text-[1.1em] !font-semibold"
-                    buttonText="Bỏ qua"
-                    disabled={false}
-                    onClick={() => {
-                      props.resetForm();
-                      setOpenPopup();
-                    }}
-                  />
-                </Form.Item>
-              </Form>
-            )}
-          </Formik>
-        </TabPane>
-        //Đăng kí
-        <TabPane
-          tab={<span style={{ color: "#C62027" }}>Đăng ký</span>}
-          key="2"
-        >
-          <Formik
-            initialValues={{ username: "", password: "" }}
-            onSubmit={handleRegister}
-            validationSchema={Yup.object().shape({
-              username: Yup.string()
-                .min(6, "Mật khẩu phải có ít nhất 6 ký tự")
-                .required("Vui lòng nhập email"),
-              password: Yup.string()
-                .min(6, "Mật khẩu phải có ít nhất 6 ký tự")
-                .required("Vui lòng nhập mật khẩu"),
-            })}
-            validateOnMount={true}
+                    label="Mật khẩu"
+                    layout="vertical"
+                    className="p-4"
+                  >
+                    <Input.Password
+                      size="large"
+                      name="password"
+                      value={props.values.password}
+                      onChange={(e) => {
+                        props.values.password = e.target.value;
+                        props.validateForm();
+                      }}
+                      placeholder="Nhập mật khẩu"
+                      iconRender={(visible) =>
+                        visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                      }
+                      visibilityToggle={passwordVisible}
+                      autoComplete="new-password"
+                    />
+                  </Form.Item>
+                  <div style={{ textAlign: "right", marginBottom: "16px" }}>
+                    <a style={{ color: "#C62027" }}>Quên mật khẩu?</a>
+                  </div>
+                  <Form.Item className="flex justify-center items-center">
+                    <CustomButton
+                      buttonType="primary"
+                      htmlType="submit"
+                      className="px-[4rem] text-[1.1em] font-600"
+                      buttonText="Đăng nhập"
+                      disabled={!props.isValid}
+                      onClick={() => console.log("clicked", props.isValid)}
+                    />
+                  </Form.Item>
+                  <Form.Item className="flex justify-center items-center">
+                    <CustomButton
+                      buttonType="default"
+                      htmlType="button"
+                      className="w-64 text-[1.1em] font-semibold"
+                      buttonText="Bỏ qua"
+                      disabled={false}
+                      onClick={() => {
+                        props.resetForm();
+                        setOpenPopup();
+                      }}
+                    />
+                  </Form.Item>
+                </Form>
+              )}
+            </Formik>
+          </TabPane>
+          //Đăng kí
+          <TabPane
+            tab={<span style={{ color: "#C62027" }}>Đăng ký</span>}
+            key="2"
           >
-            {(props) => (
-              <Form onFinish={props.handleSubmit}>
-                <Form.Item
-                  layout="vertical"
-                  label="Số điện thoại/Email"
-                  className="p-4"
-                  name="name"
-                >
-                  <Input
-                    size="large"
+            <Formik
+              initialValues={{ email: "", password: "" }}
+              onSubmit={handleRegister}
+              validationSchema={Yup.object().shape({
+                email: Yup.string()
+                  .min(6, "Mật khẩu phải có ít nhất 6 ký tự")
+                  .required("Vui lòng nhập email"),
+                password: Yup.string()
+                  .min(6, "Mật khẩu phải có ít nhất 6 ký tự")
+                  .required("Vui lòng nhập mật khẩu"),
+              })}
+              validateOnMount={true}
+            >
+              {(props) => (
+                <Form onFinish={props.handleSubmit}>
+                  <Form.Item
+                    layout="vertical"
+                    label="Số điện thoại/Email"
+                    className="p-4"
                     name="name"
-                    onChange={(e) => {
-                      props.values.username = e.target.value;
-                      props.validateForm();
-                    }}
-                    value={props.values.username}
-                    placeholder="Nhập số điện thoại hoặc email"
-                  />
-                </Form.Item>
-                <Form.Item
-                  name="password"
-                  label="Mật khẩu"
-                  layout="vertical"
-                  className="p-4"
-                >
-                  <Input.Password
-                    size="large"
+                  >
+                    <Input
+                      size="large"
+                      name="name"
+                      onChange={(e) => {
+                        props.values.email = e.target.value;
+                        props.validateForm();
+                      }}
+                      value={props.values.email}
+                      placeholder="Nhập số điện thoại hoặc email"
+                    />
+                  </Form.Item>
+                  <Form.Item
                     name="password"
-                    value={props.values.password}
-                    onChange={(e) => {
-                      props.values.password = e.target.value;
-                      props.validateForm();
-                    }}
-                    placeholder="Nhập mật khẩu"
-                    iconRender={(visible) =>
-                      visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
-                    }
-                    visibilityToggle={passwordVisible}
-                    autoComplete="new-password"
-                  />
-                </Form.Item>
-                <div style={{ textAlign: "right", marginBottom: "16px" }}>
-                  <a style={{ color: "#C62027" }}>Quên mật khẩu?</a>
-                </div>
-                <Form.Item className="flex justify-center items-center">
-                  <CustomButton
-                    buttonType="primary"
-                    htmlType="submit"
-                    className="w-[245px] text-[1.1em] !font-600"
-                    buttonText="Đăng ký"
-                    disabled={!props.isValid}
-                    onClick={() => console.log("clicked", props.isValid)}
-                  />
-                </Form.Item>
-                <Form.Item className="flex justify-center items-center">
-                  <CustomButton
-                    buttonType="default"
-                    htmlType="button"
-                    className="w-[245px] text-[1.1em] !font-600"
-                    buttonText="Bỏ qua"
-                    disabled={false}
-                    onClick={() => {
-                      props.resetForm();
-                      setOpenPopup();
-                    }}
-                  />
-                </Form.Item>
-              </Form>
-            )}
-          </Formik>
-        </TabPane>
-      </Tabs>
-    </ConfigProvider>
+                    label="Mật khẩu"
+                    layout="vertical"
+                    className="p-4"
+                  >
+                    <Input.Password
+                      size="large"
+                      name="password"
+                      value={props.values.password}
+                      onChange={(e) => {
+                        props.values.password = e.target.value;
+                        props.validateForm();
+                      }}
+                      placeholder="Nhập mật khẩu"
+                      iconRender={(visible) =>
+                        visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                      }
+                      visibilityToggle={passwordVisible}
+                      autoComplete="new-password"
+                    />
+                  </Form.Item>
+                  <div style={{ textAlign: "right", marginBottom: "16px" }}>
+                    <a style={{ color: "#C62027" }}>Quên mật khẩu?</a>
+                  </div>
+                  <Form.Item className="flex justify-center items-center">
+                    <CustomButton
+                      buttonType="primary"
+                      htmlType="submit"
+                      className="w-[245px] text-[1.1em] !font-600"
+                      buttonText="Đăng ký"
+                      disabled={!props.isValid}
+                      onClick={() => console.log("clicked", props.isValid)}
+                    />
+                  </Form.Item>
+                  <Form.Item className="flex justify-center items-center">
+                    <CustomButton
+                      buttonType="default"
+                      htmlType="button"
+                      className="w-[245px] text-[1.1em] !font-600"
+                      buttonText="Bỏ qua"
+                      disabled={false}
+                      onClick={() => {
+                        props.resetForm();
+                        setOpenPopup();
+                      }}
+                    />
+                  </Form.Item>
+                </Form>
+              )}
+            </Formik>
+          </TabPane>
+          <ToastContainer position="top-center" />
+        </Tabs>
+      </ConfigProvider>
+    </>
   );
 };

@@ -77,7 +77,7 @@ export default function Product() {
             <div className="font-nunito text-[1.6em] font-600 text-blackText">
               How Psychology Works - Hiểu Hết Về Tâm Lý Học
             </div>
-            <div className="w-[60%] flex justify-between">
+            <div className="w-[60%] flex justify-between font-nunito">
               <div>
                 <span>Nhà xuất bản:Thế Giới</span>
                 <span>Nhà cung cấp:Nhã Nam</span>
@@ -91,7 +91,7 @@ export default function Product() {
           </div>
           <div className="bg-[#fff] h-[250px] rounded-lg p-4 mt-[0.5em]">
             <h2>Thông tin vận chuyển</h2>
-            <span>
+            <span className="font-nunito">
               Giao hàng đến
               <span className="font-700"> Phường bến nghé, Quận 1,HCM</span>
             </span>
