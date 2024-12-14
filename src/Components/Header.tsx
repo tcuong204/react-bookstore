@@ -22,7 +22,7 @@ import { CustomButton } from "../utils/CustomButton";
 import { useEffect, useState } from "react";
 import { LoginAndRegisterForm } from "../utils/LoginAndRegisterForm";
 import Link from "next/link";
-import { isLoggedIn, logout } from "@/utils/Auth";
+import { getUser, isLoggedIn, logout, User } from "@/utils/Auth";
 import { useRouter } from "next/navigation";
 import { ToastContainer } from "react-toastify";
 import { Cart } from "@/app/shopping-cart/page";
@@ -33,6 +33,7 @@ export default function Header() {
   const router = useRouter();
   const [isLogin, setIsLogin] = useState<true | false>(false);
   const [cart, setCart] = useState<Cart | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const getCart = async () => {
     const res = await axiosInstance
       .get<Cart>("/get-cart?userId=" + 1)
@@ -41,11 +42,30 @@ export default function Header() {
       })
       .catch();
   };
-
+  const GetDetailUser = async () => {
+    const data = await getUser();
+    if (data) {
+      setUser(data);
+    }
+  };
   useEffect(() => {
     getCart();
     setIsLogin(isLoggedIn);
+    GetDetailUser();
   }, []);
+  const PoperContentNoti = (
+    <>
+      <div className="p-4 flex justify-center">
+        <img
+          src="https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/checkout_cart/ico_emptycart_2.svg"
+          alt="logo"
+        ></img>
+      </div>
+      <div className="flex justify-center">
+        <p>Chưa có thông báo nào</p>
+      </div>
+    </>
+  );
   const PoperContent = (
     <>
       <Divider style={{ margin: 0 }} />
@@ -152,7 +172,7 @@ export default function Header() {
           src="https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/vip/ico_vip_copper.svg"
           alt="logo"
         ></img>
-        <p onClick={() => router.push("/account")}>Trần Văn Cường</p>
+        <p onClick={() => router.push("/account")}>{user?.firstName}</p>
       </div>
       <hr />
       <div className="p-4 flex items-center">
@@ -203,7 +223,10 @@ export default function Header() {
             </AutoComplete>
           </ConfigProvider>
         </div>
-        <Popover content={PoperContent} title="Thông báo">
+        <Popover
+          content={isLogin ? PoperContentNoti : PoperContent}
+          title="Thông báo"
+        >
           <div className="p-2 cursor-pointer">
             <div className="flex justify-center">
               <img src="https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/ico_noti_gray.svg"></img>
@@ -213,48 +236,70 @@ export default function Header() {
             </div>
           </div>
         </Popover>
-        <Popover content={PopoverCartContent}>
-          <Link className="p-2 cursor-pointer" href="/shopping-cart">
-            <div className="flex justify-center">
-              <ConfigProvider
-                theme={{
-                  components: { Badge: { textFontSize: 8, textFontSizeSM: 8 } },
-                }}
-              >
-                <Badge
-                  count={cart?.totalQuantity}
-                  size="small"
-                  className="custom-badge "
-                  style={{ lineHeight: "5px", fontSize: "10px" }}
-                  showZero
+        {isLogin ? (
+          <Popover content={isLogin ? PopoverCartContent : PoperContent}>
+            <Link className="p-2 cursor-pointer" href="/shopping-cart">
+              <div className="flex justify-center">
+                <ConfigProvider
+                  theme={{
+                    components: {
+                      Badge: { textFontSize: 8, textFontSizeSM: 8 },
+                    },
+                  }}
                 >
-                  <img src="https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/ico_cart_gray.svg"></img>
-                </Badge>
-              </ConfigProvider>
+                  <Badge
+                    count={cart?.totalQuantity}
+                    size="small"
+                    className="custom-badge "
+                    style={{ lineHeight: "5px", fontSize: "10px" }}
+                    showZero
+                  >
+                    <img src="https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/ico_cart_gray.svg"></img>
+                  </Badge>
+                </ConfigProvider>
+              </div>
+              <div className="leading-5 text-[#7A7E7F] text-[12px] font-serif">
+                Giỏ hàng
+              </div>
+            </Link>
+          </Popover>
+        ) : (
+          <div>
+            <div className="flex justify-center">
+              <img src="https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/ico_cart_gray.svg"></img>
             </div>
             <div className="leading-5 text-[#7A7E7F] text-[12px] font-serif">
               Giỏ hàng
             </div>
-          </Link>
-        </Popover>
+          </div>
+        )}
         <Popover
           placement="bottomRight"
           content={isLogin ? PopoverContent2 : PoperContent}
         >
-          <div className="p-2 cursor-pointer">
-            <div className="flex justify-center">
-              <img src="https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/ico_account_gray.svg"></img>
-            </div>
-            {isLogin ? (
-              <div className="leading-5 text-[#7A7E7F] text-[12px] font-serif">
-                Cường Trần
+          {isLogin ? (
+            <>
+              <Link href="/account">
+                <div className="p-2 cursor-pointer">
+                  <div className="flex justify-center">
+                    <img src="https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/ico_account_gray.svg"></img>
+                  </div>
+                  <div className="leading-5 text-[#7A7E7F] text-[12px] font-serif">
+                    {user?.lastName}
+                  </div>
+                </div>
+              </Link>
+            </>
+          ) : (
+            <div className="p-2 cursor-pointer">
+              <div className="flex justify-center">
+                <img src="https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/ico_account_gray.svg"></img>
               </div>
-            ) : (
               <div className="leading-5 text-[#7A7E7F] text-[12px] font-serif">
                 Người dùng
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </Popover>
       </div>
       <Modal

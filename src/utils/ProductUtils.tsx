@@ -20,6 +20,19 @@ export interface Product {
   soldCount: number;
 }
 
+// Interface cho phần phân trang
+export interface Pagination {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+}
+
+// Interface cho toàn bộ response
+export interface ProductResponse {
+  message: string;
+  products: Product[];
+  pagination: Pagination;
+}
 export interface DetailProduct {
   id: number;
   name: string;
@@ -51,8 +64,8 @@ export interface StatusData {
 export const getProductbyPage = async (page: number) => {
   let data;
   const res = await axiosInstance
-    .get("/get-products?page=" + page)
-    .then((res) => (data = res.data.product))
+    .get("/get-products?limit=10&page=" + page)
+    .then((res) => (data = res.data))
     .catch();
   return data;
 };

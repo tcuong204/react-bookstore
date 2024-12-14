@@ -1,6 +1,4 @@
 import axiosInstance from "@/axios/axiosConfig";
-import { headers } from "next/headers";
-import { useRouter } from "next/router";
 export interface User {
   id: number;
   firstName: string;

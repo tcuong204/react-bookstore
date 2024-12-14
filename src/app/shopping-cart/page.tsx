@@ -1,5 +1,4 @@
 "use client";
-import Header from "@/Components/Header";
 import "react-toastify/dist/ReactToastify.css";
 import { CustomButton } from "@/utils/CustomButton";
 import { useEffect, useState } from "react";
@@ -24,7 +23,6 @@ import debounce from "lodash.debounce";
 import axiosInstance from "@/axios/axiosConfig";
 import { useRouter } from "next/navigation";
 import { Bounce, toast, ToastContainer } from "react-toastify";
-import { StatusData } from "@/utils/ProductUtils";
 export interface Cart {
   message: string;
   cartItems: CartItem[];
@@ -45,12 +43,12 @@ export interface CartItem {
 }
 const plainOptions = ["Apple", "Pear", "Orange"];
 const defaultCheckedList = [""];
-const theme: ThemeConfig = {
+export const themeRadio: ThemeConfig = {
   token: {
     colorPrimary: "#C62027", // Set primary color
     colorBgContainer: "#fff", // Background color for the button
     colorBorder: "#C62027", // Border color for buttons
-    colorText: "#fff", // Text color for primary buttons
+    colorText: "#000", // Text color for primary buttons
   },
   components: {
     Button: {
@@ -152,7 +150,7 @@ export default function ShoppingCart() {
     try {
       setIsLoading(true);
       const response = await axiosInstance
-        .patch<Cart>("/update-cartitem", body)
+        .patch("/update-cartitem", body)
         .then((res) => {
           if (res.status === 200) {
             getCart();
@@ -186,10 +184,8 @@ export default function ShoppingCart() {
   const onCheckAllChange: CheckboxProps["onChange"] = (e) => {
     setCheckedList(e.target.checked ? plainOptions : []);
   };
-  console.log(isLoading);
   return (
     <>
-      <Header />
       <div className="flex justify-center bg-[#F0F0F0] font-nunito">
         <div className="p-2   w-[72%]">
           <div className="my-[0.5em]">
@@ -199,7 +195,7 @@ export default function ShoppingCart() {
           </div>
           <div className=" flex ">
             {cart?.totalQuantity === 0 ? (
-              <div className="rounded-4 bg-[#fff] w-full pt-[1em] pb-[1em]">
+              <div className="rounded-4 bg-[#fff] w-full m-h-[650px] pt-[1em] pb-[1em]">
                 <div className="flex justify-center">
                   <img src="https://cdn0.fahasa.com/skin//frontend/ma_vanese/fahasa/images/checkout_cart/ico_emptycart.svg"></img>
                 </div>
@@ -213,7 +209,7 @@ export default function ShoppingCart() {
                     buttonText="Mua sắm ngay"
                     buttonType="primary"
                     htmlType="button"
-                    onClick={() => console.log("clicked")}
+                    onClick={() => router.push("/all-product")}
                     className=""
                     disabled={false}
                   />
@@ -222,7 +218,7 @@ export default function ShoppingCart() {
             ) : (
               <>
                 <div className="p-2   w-[72%] ">
-                  <ConfigProvider theme={theme}>
+                  <ConfigProvider theme={themeRadio}>
                     <div className="flex p-2 w-full bg-[#fff] rounded-md">
                       <div className="w-[68%] flex items-center">
                         <Checkbox
@@ -240,7 +236,7 @@ export default function ShoppingCart() {
                       </div>
                     </div>
 
-                    <div className="bg-[#fff] mt-[1rem] ">
+                    <div className="bg-[#fff] mt-[1rem] min-h-[450px]">
                       <Spin spinning={isLoading}>
                         {cart?.cartItems?.map((a, index) => (
                           <div key={index}>
@@ -268,7 +264,12 @@ export default function ShoppingCart() {
                                 <div>
                                   <a>{a.name}</a>
                                 </div>
-                                <b>{a.price?.toLocaleString("en-US")}đ</b>
+                                <div className="flex">
+                                  <b>{a.price?.toLocaleString("en-US")}đ</b>
+                                  <div className="original-price  flex text-[13px] items-center ml-[0.5rem]">
+                                    {a.originalPrice?.toLocaleString("en-US")}đ
+                                  </div>
+                                </div>
                               </div>
                               <div className="flex items-center justify-between w-[27%]">
                                 <div className="flex items-center border-2 border-[#E0E0E0E0] border-solid rounded-lg">
@@ -332,7 +333,7 @@ export default function ShoppingCart() {
                     </div>
                   </ConfigProvider>
                 </div>
-                <div className="w-[28%]  mt-[4rem] font-nunito">
+                <div className="w-[28%]  mt-[4.5rem] font-nunito">
                   <div className="bg-[#fff] rounded-md">
                     <div className="p-4">
                       <p className="font-400 ">Thành tiền</p>

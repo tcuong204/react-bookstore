@@ -15,6 +15,10 @@ html {
     --foreground: #ededed;
   }
 }
+.original-price {
+  color: #bfbfbf;
+  text-decoration: line-through;
+}
 a {
   font-size: 15px;
   color: #333333;
@@ -30,7 +34,6 @@ a {
 }
 label {
   font-size: var(--font-size-18);
-  font-weight: 650;
   padding: 0 8px 0 0;
   margin-bottom: 0;
   text-align: left;
@@ -52,7 +55,6 @@ body {
   padding-bottom: 1em;
 }
 span {
-  color: var(--black);
   font-size: 14px;
   padding: 4px 0;
 }

@@ -1,7 +1,5 @@
 "use client";
 import axiosInstance from "@/axios/axiosConfig";
-import Footer from "@/Components/Footer";
-import Header from "@/Components/Header";
 import { CustomButton } from "@/utils/CustomButton";
 import { DetailProduct, getDetailProduct } from "@/utils/ProductUtils";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
@@ -64,7 +62,6 @@ export default function DetailProductt() {
 
   return (
     <>
-      <Header />
       <div className="w-full bg-[#ccc] flex justify-center p-4">
         <div className="w-[484px] h-[650px] rounded-lg p-4 mr-[4px]  bg-[#fff] sticky left-0 top-[16px]">
           <div className="">
@@ -247,7 +244,6 @@ export default function DetailProductt() {
           </div>
         </div>
       </div>
-      <Footer />
       <ToastContainer />
     </>
   );

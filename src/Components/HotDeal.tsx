@@ -1,14 +1,18 @@
 "use client";
 import { CustomButton } from "@/utils/CustomButton";
-import { getAllProducts, Product } from "@/utils/ProductUtils";
+import {
+  getProductbyPage,
+  Product,
+  ProductResponse,
+} from "@/utils/ProductUtils";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 export function HotDeal() {
-  const [product, setProduct] = useState<Product[] | null>(null);
+  const [product, setProduct] = useState<ProductResponse | null>(null);
   const router = useRouter();
   const getProducts = async () => {
-    const data = await getAllProducts();
+    const data = await getProductbyPage(1);
     if (data) {
       setProduct(data);
     }
@@ -32,7 +36,7 @@ export function HotDeal() {
             <h2>Xu hướng mua sắm</h2>
           </div>
           <div className="grid grid-cols-5">
-            {product?.map((value, index) => (
+            {product?.products?.map((value, index) => (
               <Link href={`detail-product/${value.id}`}>
                 <div key={index} className="p-3 font-serif">
                   <div className="hover:shadow-md hover:cursor-pointer p-3">
