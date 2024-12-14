@@ -1,5 +1,6 @@
 "use client";
 import Header from "@/Components/Header";
+import "react-toastify/dist/ReactToastify.css";
 import { CustomButton } from "@/utils/CustomButton";
 import { useEffect, useState } from "react";
 import {
@@ -22,6 +23,8 @@ import { getUser } from "@/utils/Auth";
 import debounce from "lodash.debounce";
 import axiosInstance from "@/axios/axiosConfig";
 import { useRouter } from "next/navigation";
+import { Bounce, toast, ToastContainer } from "react-toastify";
+import { StatusData } from "@/utils/ProductUtils";
 export interface Cart {
   message: string;
   cartItems: CartItem[];
@@ -62,7 +65,6 @@ const theme: ThemeConfig = {
 export default function ShoppingCart() {
   const [cart, setCart] = useState<Cart | null>(null);
   const [checkedList, setCheckedList] = useState<string[]>(defaultCheckedList);
-  const [totalPrice, setTotalPrice] = useState(0);
   const [user, setUser] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
@@ -72,53 +74,97 @@ export default function ShoppingCart() {
   const onChange = (list: string[]) => {
     setCheckedList(list);
   };
-  const GetDetailUser = async () => {
-    const data = await getUser();
-    console.log(data);
+  const deleteCartItem = async (cartItemId: number) => {
+    try {
+      const res = axiosInstance
+        .delete<Cart>("/delete-cartitem?cartItemId=" + cartItemId)
+        .then((res) => {
+          if (res.status === 200) {
+            toast.success("Bỏ sản phẩm khỏi giỏ hàng thành công", {
+              position: "top-center",
+              autoClose: 2000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+              transition: Bounce,
+            });
+            getCart();
+          } else
+            toast.error("Bỏ sản phẩm khỏi giỏ hàng thất bại", {
+              position: "top-center",
+              autoClose: 2000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+              transition: Bounce,
+            });
+        })
+        .catch();
+    } catch (error) {
+      console.error("Failed to delete cart quantity:", error);
+      toast.error("Bỏ sản phẩm khỏi giỏ hàng thất bại", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+    } finally {
+    }
   };
   const updateCartQuantity = async (cartId: number, quantity: number) => {
-    setIsLoading(true);
+    let body = {
+      cartItemId: cartId,
+      quantity: quantity,
+    };
     try {
-      let body = {
-        cartItemId: cartId,
-        quantity: quantity,
-      };
-      const response = await axiosInstance.patch<Cart>(
-        "/update-cartitem",
-        body
-      );
-
-      // Cập nhật lại cart từ API trả về
-      if (response.data) {
-        setCart(response.data);
-      }
+      setIsLoading(true);
+      const response = await axiosInstance
+        .patch<Cart>("/update-cartitem", body)
+        .then((res) => {
+          if (res.status === 200) {
+            getCart();
+          }
+        });
     } catch (error) {
       console.error("Failed to update cart quantity:", error);
     } finally {
-      setIsLoading(false);
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 500);
     }
-    getCart();
   };
   const addCheckedProduct = async (cartItemId: number, isChecked: boolean) => {
-    setIsLoading(true);
+    let body = {
+      cartItemId: cartItemId,
+      isChecked: isChecked,
+    };
     try {
-      let body = {
-        cartItemId: cartItemId,
-        isChecked: isChecked,
-      };
-      const response = await axiosInstance.patch<Cart>(
-        "/update-cartitem",
-        body
-      );
-      if (response.data) {
-        setCart(response.data);
-      }
+      setIsLoading(true);
+      const response = await axiosInstance
+        .patch<Cart>("/update-cartitem", body)
+        .then((res) => {
+          if (res.status === 200) {
+            getCart();
+          }
+        });
     } catch (error) {
       console.error("Failed to update cart quantity:", error);
     } finally {
-      setIsLoading(false);
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 500);
     }
-    getCart();
   };
   const updateQuantityDebouce = debounce(
     (cartItemId: number, quantity: number) => {
@@ -134,14 +180,13 @@ export default function ShoppingCart() {
       })
       .catch();
   };
-
   useEffect(() => {
     getCart();
   }, []);
   const onCheckAllChange: CheckboxProps["onChange"] = (e) => {
     setCheckedList(e.target.checked ? plainOptions : []);
   };
-  console.log(cart);
+  console.log(isLoading);
   return (
     <>
       <Header />
@@ -198,7 +243,7 @@ export default function ShoppingCart() {
                     <div className="bg-[#fff] mt-[1rem] ">
                       <Spin spinning={isLoading}>
                         {cart?.cartItems?.map((a, index) => (
-                          <>
+                          <div key={index}>
                             <div
                               key={index}
                               className="w-full  flex py-[1.6em]"
@@ -266,7 +311,11 @@ export default function ShoppingCart() {
                                 </div>
                               </div>
                               <div className="flex items-center justify-center w-[8%]">
-                                <DeleteFilled />
+                                <DeleteFilled
+                                  onClick={() => {
+                                    deleteCartItem(a.cartItemId);
+                                  }}
+                                />
                               </div>
                               <h2>{}</h2>
                             </div>
@@ -277,7 +326,7 @@ export default function ShoppingCart() {
                                 />
                               </div>
                             )}
-                          </>
+                          </div>
                         ))}
                       </Spin>
                     </div>
@@ -312,6 +361,7 @@ export default function ShoppingCart() {
             )}
           </div>
         </div>
+        <ToastContainer />
       </div>
     </>
   );

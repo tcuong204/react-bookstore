@@ -17,6 +17,7 @@ const config: Config = {
         grayText: "#333333",
         background: "var(--background)",
         foreground: "var(--foreground)",
+        grayBg: "#F0F0F0",
       },
     },
   },

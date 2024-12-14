@@ -9,6 +9,7 @@ import {
 } from "@ant-design/icons";
 import {
   AutoComplete,
+  Badge,
   Button,
   ConfigProvider,
   Divider,
@@ -99,31 +100,27 @@ export default function Header() {
         <>
           <div className="m-h-[376px] overflow: scroll">
             {cart.cartItems.map((array, index) => (
-              <>
-                <div className="flex p-2">
+              <div key={index} className="flex p-2">
+                <div>
+                  <img
+                    src={array.image}
+                    alt={array.name}
+                    width={65}
+                    height={65}
+                  ></img>
+                </div>
+                <div className="w-[252px] flex flex-col justify-between">
                   <div>
-                    <img
-                      src={array.image}
-                      alt={array.name}
-                      width={65}
-                      height={65}
-                    ></img>
+                    <a className="text-[14px] text-[#7A7E7F] ">{array.name}</a>
                   </div>
-                  <div className="w-[252px] flex flex-col justify-between">
-                    <div>
-                      <a className="text-[14px] text-[#7A7E7F] ">
-                        {array.name}
-                      </a>
-                    </div>
-                    <div className="flex">
-                      <b className="font-nunito font-[1.23rem]">
-                        {array.price.toLocaleString("en-US")}
-                      </b>
-                      <a className="text-[13px]">x{array.quantity}</a>
-                    </div>
+                  <div className="flex">
+                    <b className="font-nunito font-[1.23rem]">
+                      {array.price.toLocaleString("en-US")}
+                    </b>
+                    <a className="text-[13px]">x{array.quantity}</a>
                   </div>
                 </div>
-              </>
+              </div>
             ))}
           </div>
           <div className="flex justify-between p-4">
@@ -136,7 +133,7 @@ export default function Header() {
             <div className="flex items-center">
               <CustomButton
                 className="w-full "
-                onClick={() => router.push("shopping-cart")}
+                onClick={() => router.push("/shopping-cart")}
                 buttonText="Xem thêm"
                 buttonType="primary"
                 disabled={false}
@@ -219,7 +216,21 @@ export default function Header() {
         <Popover content={PopoverCartContent}>
           <Link className="p-2 cursor-pointer" href="/shopping-cart">
             <div className="flex justify-center">
-              <img src="https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/ico_cart_gray.svg"></img>
+              <ConfigProvider
+                theme={{
+                  components: { Badge: { textFontSize: 8, textFontSizeSM: 8 } },
+                }}
+              >
+                <Badge
+                  count={cart?.totalQuantity}
+                  size="small"
+                  className="custom-badge "
+                  style={{ lineHeight: "5px", fontSize: "10px" }}
+                  showZero
+                >
+                  <img src="https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/ico_cart_gray.svg"></img>
+                </Badge>
+              </ConfigProvider>
             </div>
             <div className="leading-5 text-[#7A7E7F] text-[12px] font-serif">
               Giỏ hàng

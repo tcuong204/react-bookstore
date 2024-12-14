@@ -12,9 +12,10 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 import styled from "styled-components";
+import Link from "next/link";
 const StyledSwiper = styled(Swiper)`
   width: 100%;
-  height: 316px;
+  height: 320px;
 
   .swiper-slide {
     background-color: #f0f0f0;
@@ -70,10 +71,26 @@ export default () => {
         loop
         style={{ width: 800 }}
       >
-        <SwiperSlide>Slide 1</SwiperSlide>
-        <SwiperSlide>Slide 2</SwiperSlide>
-        <SwiperSlide>Slide 3</SwiperSlide>
-        <SwiperSlide>Slide 4</SwiperSlide>
+        <SwiperSlide>
+          <Link href="/all-product">
+            <img src="https://cdn0.fahasa.com/media/magentothem/banner7/trangpatnership_840x320.jpg"></img>
+          </Link>
+        </SwiperSlide>
+        <SwiperSlide>
+          <Link href="/all-product">
+            <img src="https://cdn0.fahasa.com/media/magentothem/banner7/herobanner_1512_840x320.jpg"></img>
+          </Link>
+        </SwiperSlide>
+        <SwiperSlide>
+          <Link href="/all-product">
+            <img src="https://cdn0.fahasa.com/media/magentothem/banner7/BlindboxT1224_banner_840x320.jpg"></img>
+          </Link>
+        </SwiperSlide>
+        <SwiperSlide>
+          <Link href="/all-product">
+            <img src="https://cdn0.fahasa.com/media/magentothem/banner7/laprap1224_laprap1124_slide_840x320.jpg"></img>
+          </Link>
+        </SwiperSlide>
       </StyledSwiper>
     </div>
   );

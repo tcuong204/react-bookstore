@@ -1,12 +1,13 @@
 "use client";
-import { CustomButton } from "@/utils/CustomButton";
+import Footer from "@/Components/Footer";
+import Header from "@/Components/Header";
 import { getAllProducts, Product } from "@/utils/ProductUtils";
+import { Divider, Pagination, Rate } from "antd";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-export function HotDeal() {
+
+export default function AllProduct() {
   const [product, setProduct] = useState<Product[] | null>(null);
-  const router = useRouter();
   const getProducts = async () => {
     const data = await getAllProducts();
     if (data) {
@@ -16,20 +17,13 @@ export function HotDeal() {
   useEffect(() => {
     getProducts();
   }, []);
-  console.log(product);
-
   return (
-    <section id="hot-deal" className="transition delay-0 duration-300 ease-in">
-      <div className="flex justify-center algin-center bg-[#F0F0F0]">
-        <div className="xl:w-[72%] bg-[#fff] rounded-lg">
-          <div className="flex p-4 items-center bg-[#FCDDEF]">
-            <img
-              src="https://cdn0.fahasa.com/media/wysiwyg/icon-menu/icon_dealhot_new.png"
-              alt="logo"
-              width={32}
-              height={32}
-            ></img>
-            <h2>Xu hướng mua sắm</h2>
+    <>
+      <Header />
+      <div className="flex justify-center bg-grayBg">
+        <div className="w-[72%] bg-[#fff] rounded-lg mt-[1rem] ">
+          <div className="p-4 bg-[#FCDDEF]">
+            <b>TẤT CẢ SẢN PHẨM</b>
           </div>
           <div className="grid grid-cols-5">
             {product?.map((value, index) => (
@@ -47,23 +41,28 @@ export function HotDeal() {
                         {value.price.toLocaleString("en-US")}
                       </p>
                     </div>
+                    <div className="">
+                      <Rate
+                        allowHalf
+                        defaultValue={value.averageRating}
+                        disabled
+                      />
+                      <Divider type="vertical" />
+                      <span>
+                        Đã bán <span>{value.soldCount}</span>
+                      </span>
+                    </div>
                   </div>
                 </div>
               </Link>
             ))}
           </div>
-          <div className="flex justify-center items-center pb-[1rem]">
-            <CustomButton
-              className="w-[210px] h-[40px] !font-serif border-2 !text-[12px] !font-[550] "
-              onClick={() => router.push("/all-product")}
-              buttonText="Xem thêm"
-              buttonType="default"
-              disabled={false}
-              htmlType="button"
-            />
-          </div>
         </div>
       </div>
-    </section>
+      <div className="font-nunito py-[1rem]">
+        <Pagination align="center" defaultCurrent={1} total={50} />
+      </div>
+      <Footer />
+    </>
   );
 }

@@ -1,6 +1,15 @@
 import axiosInstance from "@/axios/axiosConfig";
 import { headers } from "next/headers";
 import { useRouter } from "next/router";
+export interface User {
+  id: number;
+  firstName: string;
+  lastName: string;
+  gender: boolean; // true: male, false: female
+  isLogin: boolean;
+  phoneNumber: string;
+  profileImage: string | null; // null if no image
+}
 
 export const isLoggedIn = (): boolean => {
   if (typeof window !== "undefined") {

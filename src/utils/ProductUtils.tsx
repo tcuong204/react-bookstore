@@ -1,0 +1,74 @@
+import axiosInstance from "@/axios/axiosConfig";
+
+export interface Image {
+  url: string;
+  isPrimary: boolean;
+  orderNumber: number;
+  productId: number;
+}
+
+export interface Review {}
+
+export interface Product {
+  averageRating: number;
+  id: number;
+  name: string;
+  image: string;
+  originalPrice: number;
+  price: number;
+  quantityAvailable: number;
+  soldCount: number;
+}
+
+export interface DetailProduct {
+  id: number;
+  name: string;
+  author: string;
+  supplier: string;
+  publisher: string;
+  bookLayout: string;
+  price: number;
+  originalPrice: number;
+  productCode: string;
+  publishYear: number;
+  language: string;
+  weight: number;
+  size: string;
+  quantityOfPages: number;
+  quantityAvailable: number;
+  description: string;
+  genreId: number;
+  averageRating: number;
+  soldCount: number;
+  images: Image[];
+  reviews: Review[];
+}
+
+export interface StatusData {
+  statusMes: string;
+  message: string;
+}
+export const getProductbyPage = async (page: number) => {
+  let data;
+  const res = await axiosInstance
+    .get("/get-products?page=" + page)
+    .then((res) => (data = res.data.product))
+    .catch();
+  return data;
+};
+export const getAllProducts = async () => {
+  let data;
+  const res = await axiosInstance
+    .get("/get-products")
+    .then((res) => (data = res.data.products))
+    .catch();
+  return data;
+};
+export const getDetailProduct = async (id: number) => {
+  let data;
+  const res = await axiosInstance
+    .get("/get-product-details?id=" + id)
+    .then((res) => (data = res.data.product))
+    .catch();
+  return data;
+};

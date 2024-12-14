@@ -14,6 +14,7 @@ import axios from "axios";
 import axiosInstance from "../axios/axiosConfig";
 import { useRouter } from "next/navigation";
 import { Slide, toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 interface Values {
   email: string;
   password: string;
@@ -272,7 +273,7 @@ export const LoginAndRegisterForm: React.FC<LoginAndRegisterFormProps> = ({
               )}
             </Formik>
           </TabPane>
-          <ToastContainer position="top-center" />
+          <ToastContainer />
         </Tabs>
       </ConfigProvider>
     </>
