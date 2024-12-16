@@ -1,6 +1,6 @@
 "use client";
-import DeliveryAddress from "@/Components/AccountMenu/address";
-import UserInfo from "@/Components/AccountMenu/UserInfo";
+
+import UserInfo from "@/Components/Account/UserInfo";
 import { getUser, User } from "@/utils/Auth";
 import { LinkOutlined, SettingOutlined } from "@ant-design/icons";
 import {

@@ -1,16 +1,18 @@
 "use client";
 import axiosInstance from "@/axios/axiosConfig";
+import { Cart, useCart } from "@/utils/CartContext";
 import { CustomButton } from "@/utils/CustomButton";
 import { DetailProduct, getDetailProduct } from "@/utils/ProductUtils";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
-import { Divider, Image } from "antd";
+import { Divider, Image, message } from "antd";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { useEffect, useState } from "react";
-import { Bounce, toast, ToastContainer } from "react-toastify";
 export default function DetailProductt() {
   const [product, setProduct] = useState<DetailProduct | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
+  const { cart, setCart } = useCart();
+  const [messageApi, contextHolder] = message.useMessage();
   const pathname = usePathname();
   const param = pathname.split("/").pop();
   const router = useRouter();
@@ -18,39 +20,28 @@ export default function DetailProductt() {
     const data = await getDetailProduct(Number(param));
     if (data) setProduct(data);
   };
-  const addToCart = async (productId: number, quantity: number) => {
+  const getCart = async () => {
+    const res = await axiosInstance
+      .get<Cart>("/get-cart?userId=" + 1)
+      .then((response) => {
+        setCart(response.data);
+      })
+      .catch();
+  };
+  const addToCart = async (productId: number | undefined, quantity: number) => {
     const body = {
       userId: 1,
       productId: productId,
       quantity: quantity,
     };
     const res = axiosInstance
-      .post("/add-to-cart", body)
+      .post<Cart>("/add-to-cart", body)
       .then((res) => {
         if (res.status === 200) {
-          toast.success("Thêm sản phẩm vào giỏ hàng thành công", {
-            position: "top-center",
-            autoClose: 2000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-            transition: Bounce,
-          });
+          getCart();
+          message.success("Thêm sản phẩm thành công");
         } else {
-          toast.error("Thêm sản phẩm vào giỏ hàng thành công", {
-            position: "top-center",
-            autoClose: 2000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-            transition: Bounce,
-          });
+          message.error("Thêm sản phẩm không thành thành công");
         }
       })
       .catch();
@@ -58,8 +49,6 @@ export default function DetailProductt() {
   useEffect(() => {
     getProduct();
   }, []);
-  console.log(product);
-
   return (
     <>
       <div className="w-full bg-[#ccc] flex justify-center p-4">
@@ -69,17 +58,19 @@ export default function DetailProductt() {
           </div>
           <div className="flex">
             {product?.images.map((arr, index) => (
-              <>
+              <div key={index}>
                 <div className="border-[#2489F4] hover:border-[1px] ">
                   <Image src={arr.url} height={82} width={82}></Image>
                 </div>
-              </>
+              </div>
             ))}
           </div>
           <div className="flex p-4">
             <CustomButton
               className="w-full "
-              onClick={() => addToCart(product?.id, quantity)}
+              onClick={() => {
+                addToCart(product?.id, quantity);
+              }}
               buttonText="Thêm vào giỏ hàng"
               buttonType="default"
               disabled={false}
@@ -244,7 +235,6 @@ export default function DetailProductt() {
           </div>
         </div>
       </div>
-      <ToastContainer />
     </>
   );
 }

@@ -1,46 +1,15 @@
 "use client";
-import "react-toastify/dist/ReactToastify.css";
 import { CustomButton } from "@/utils/CustomButton";
 import { useEffect, useState } from "react";
-import {
-  Checkbox,
-  ConfigProvider,
-  Divider,
-  InputNumber,
-  Row,
-  Spin,
-} from "antd";
+import { Checkbox, ConfigProvider, Divider, message, Spin } from "antd";
 import type { ThemeConfig } from "antd/es/config-provider/context";
 import type { CheckboxProps } from "antd";
-import {
-  DeleteFilled,
-  LoadingOutlined,
-  MinusOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
+import { DeleteFilled, MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { getUser } from "@/utils/Auth";
 import debounce from "lodash.debounce";
 import axiosInstance from "@/axios/axiosConfig";
 import { useRouter } from "next/navigation";
-import { Bounce, toast, ToastContainer } from "react-toastify";
-export interface Cart {
-  message: string;
-  cartItems: CartItem[];
-  totalAmount: number;
-  totalQuantity: number;
-}
-export interface CartItem {
-  cartItemId: number;
-  productId: number;
-  name: string;
-  price: number;
-  originalPrice: number;
-  image: string;
-  quantity: number;
-  totalPrice: number;
-  isChecked: boolean;
-  isCheckedOut: boolean;
-}
+import { Cart, useCart } from "@/utils/CartContext";
 const plainOptions = ["Apple", "Pear", "Orange"];
 const defaultCheckedList = [""];
 export const themeRadio: ThemeConfig = {
@@ -61,12 +30,12 @@ export const themeRadio: ThemeConfig = {
 };
 
 export default function ShoppingCart() {
-  const [cart, setCart] = useState<Cart | null>(null);
+  const { cart, setCart } = useCart();
   const [checkedList, setCheckedList] = useState<string[]>(defaultCheckedList);
-  const [user, setUser] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
   const checkAll = plainOptions.length === checkedList.length;
+  const [messageApi, contextHolder] = message.useMessage();
   const indeterminate =
     checkedList.length > 0 && checkedList.length < plainOptions.length;
   const onChange = (list: string[]) => {
@@ -78,45 +47,14 @@ export default function ShoppingCart() {
         .delete<Cart>("/delete-cartitem?cartItemId=" + cartItemId)
         .then((res) => {
           if (res.status === 200) {
-            toast.success("Bỏ sản phẩm khỏi giỏ hàng thành công", {
-              position: "top-center",
-              autoClose: 2000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "light",
-              transition: Bounce,
-            });
+            messageApi.success("Bỏ sản phẩm khỏi giỏ hàng thành công");
             getCart();
-          } else
-            toast.error("Bỏ sản phẩm khỏi giỏ hàng thất bại", {
-              position: "top-center",
-              autoClose: 2000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "light",
-              transition: Bounce,
-            });
+          } else messageApi.error("Bỏ sản phẩm khỏi giỏ hàng không thành công");
         })
         .catch();
     } catch (error) {
       console.error("Failed to delete cart quantity:", error);
-      toast.error("Bỏ sản phẩm khỏi giỏ hàng thất bại", {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-        transition: Bounce,
-      });
+      messageApi.error("Bỏ sản phẩm khỏi giỏ hàng không thành công");
     } finally {
     }
   };
@@ -168,7 +106,7 @@ export default function ShoppingCart() {
     (cartItemId: number, quantity: number) => {
       updateCartQuantity(cartItemId, quantity);
     },
-    1000
+    200
   );
   const getCart = async () => {
     const res = await axiosInstance
@@ -362,8 +300,8 @@ export default function ShoppingCart() {
             )}
           </div>
         </div>
-        <ToastContainer />
       </div>
+      {contextHolder}
     </>
   );
 }

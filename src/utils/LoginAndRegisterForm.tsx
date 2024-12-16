@@ -4,7 +4,15 @@ import {
   InfoCircleOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Button, ConfigProvider, Form, Input, Radio, Tabs } from "antd";
+import {
+  Button,
+  ConfigProvider,
+  Form,
+  Input,
+  message,
+  Radio,
+  Tabs,
+} from "antd";
 import { useEffect, useState } from "react";
 import { CustomButton } from "./CustomButton";
 import TabPane from "antd/es/tabs/TabPane";
@@ -28,6 +36,7 @@ export const LoginAndRegisterForm: React.FC<LoginAndRegisterFormProps> = ({
   const [passwordVisible, setPasswordVisible] = useState<true | false>(true);
   const form = Form.useForm();
   const router = useRouter();
+  const [messageApi, contextHolder] = message.useMessage();
   const handleLogin = async (
     values: Values,
     { setSubmitting }: FormikHelpers<Values>
@@ -37,36 +46,19 @@ export const LoginAndRegisterForm: React.FC<LoginAndRegisterFormProps> = ({
       .post("/login", body)
       .then((response) => {
         const res = response;
-        console.log(response);
 
         if (res.status === 200) {
-          toast.success("Đăng nhập thành công", {
-            position: "top-center",
-            autoClose: 1000,
-            hideProgressBar: false,
-            closeOnClick: false,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-            transition: Slide,
-          });
+          messageApi.success("Đăng nhập thành công");
           window.localStorage.setItem("token", response?.data?.token);
           setTimeout(() => {
             window.location.href = "/";
           }, 2000);
         } else {
-          toast.error("Đăng nhập thất bại", {
-            position: "top-center",
-            autoClose: 3000,
-          });
+          messageApi.error("Đăng nhập không thành công");
         }
       })
       .catch((error) => {
-        toast.error("Đăng nhập thất bại", {
-          position: "top-center",
-          autoClose: 3000,
-        });
+        messageApi.error("Đăng nhập không thành công");
       });
   };
   const handleRegister = async (

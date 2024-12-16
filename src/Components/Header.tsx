@@ -9,6 +9,7 @@ import {
 } from "@ant-design/icons";
 import {
   AutoComplete,
+  AutoCompleteProps,
   Badge,
   Button,
   ConfigProvider,
@@ -16,6 +17,7 @@ import {
   Input,
   Modal,
   Popover,
+  Typography,
 } from "antd";
 import Search from "antd/es/input/Search";
 import { CustomButton } from "../utils/CustomButton";
@@ -25,15 +27,40 @@ import Link from "next/link";
 import { getUser, isLoggedIn, logout, User } from "@/utils/Auth";
 import { useRouter } from "next/navigation";
 import { ToastContainer } from "react-toastify";
-import { Cart } from "@/app/shopping-cart/page";
 import axiosInstance from "@/axios/axiosConfig";
+import { Cart, useCart } from "@/utils/CartContext";
+import {
+  ProductSearchResponse,
+  ResultSearchProduct,
+  searchProductbyName,
+} from "@/utils/ProductUtils";
 const Menu = () => {};
+const { Text } = Typography;
 export default function Header() {
   const [openPopup, setOpenPopup] = useState<true | false>(false);
   const router = useRouter();
   const [isLogin, setIsLogin] = useState<true | false>(false);
-  const [cart, setCart] = useState<Cart | null>(null);
+  const { cart, setCart } = useCart();
   const [user, setUser] = useState<User | null>(null);
+  const [result, setResult] = useState<ProductSearchResponse | undefined>(
+    undefined
+  );
+  const [q, setQ] = useState("");
+  const onChange = (data: string) => {
+    setQ(data);
+  };
+  const getResult = async () => {
+    if (q.length === 0) {
+      return;
+    }
+    const filteredProducts = await searchProductbyName(q, undefined);
+    console.log(filteredProducts);
+
+    setResult(filteredProducts);
+  };
+  const onSearch = (q: string) => {
+    router.push(`/search/${q}`);
+  };
   const getCart = async () => {
     const res = await axiosInstance
       .get<Cart>("/get-cart?userId=" + 1)
@@ -52,7 +79,8 @@ export default function Header() {
     getCart();
     setIsLogin(isLoggedIn);
     GetDetailUser();
-  }, []);
+    getResult();
+  }, [q]);
   const PoperContentNoti = (
     <>
       <div className="p-4 flex justify-center">
@@ -106,7 +134,7 @@ export default function Header() {
         </div>
       </div>
       <Divider style={{ marginTop: 6, marginBottom: 6 }} />
-      {cart?.totalAmount === 0 || cart === null ? (
+      {cart?.totalQuantity === 0 || cart === null ? (
         <>
           <div className="p-4 flex justify-center">
             <img
@@ -213,12 +241,56 @@ export default function Header() {
               },
             }}
           >
-            <AutoComplete style={{ width: 585, height: 40 }} className="">
+            <AutoComplete
+              style={{ width: 585, height: 40 }}
+              value={q}
+              options={result?.data.map((product) => ({
+                value: product.name, // Giá trị để hiển thị trong input khi được chọn
+                label: (
+                  <div
+                    key={product.id}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                    }}
+                  >
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      width={40}
+                      height={40}
+                      style={{ borderRadius: "4px" }}
+                    />
+                    <div>
+                      <Text strong>{product.name}</Text>
+                      <br />
+                      <Text type="secondary">
+                        {product.price.toLocaleString("en-US")}đ
+                      </Text>
+                    </div>
+                  </div>
+                ),
+              }))}
+              onChange={onChange}
+              allowClear
+              onSelect={(e, op) => {
+                router.push(`/detail-product/${op.label.key}`);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  onSearch(q);
+                }
+              }}
+            >
               <Search
                 size="large"
-                placeholder="Nexus - Kỷ nguyên thông tin của loài người"
+                placeholder="Tìm kiếm theo tên sản phẩm"
                 className=""
                 enterButton
+                onSearch={() => {
+                  onSearch(q);
+                }}
               />
             </AutoComplete>
           </ConfigProvider>
@@ -247,13 +319,7 @@ export default function Header() {
                     },
                   }}
                 >
-                  <Badge
-                    count={cart?.totalQuantity}
-                    size="small"
-                    className="custom-badge "
-                    style={{ lineHeight: "5px", fontSize: "10px" }}
-                    showZero
-                  >
+                  <Badge count={cart?.totalQuantity} size="small" showZero>
                     <img src="https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/ico_cart_gray.svg"></img>
                   </Badge>
                 </ConfigProvider>

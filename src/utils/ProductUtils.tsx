@@ -56,7 +56,27 @@ export interface DetailProduct {
   images: Image[];
   reviews: Review[];
 }
+export interface ResultSearchProduct {
+  id: number;
+  name: string;
+  price: number;
+  originalPrice: number;
+  quantityAvailable: number;
+  averageRating: number;
+  image: string;
+}
+export interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+}
 
+// Interface phản hồi API tìm kiếm sản phẩm
+export interface ProductSearchResponse {
+  message: string;
+  data: ResultSearchProduct[];
+  pagination: Pagination;
+}
 export interface StatusData {
   statusMes: string;
   message: string;
@@ -82,6 +102,21 @@ export const getDetailProduct = async (id: number) => {
   const res = await axiosInstance
     .get("/get-product-details?id=" + id)
     .then((res) => (data = res.data.product))
+    .catch();
+  return data;
+};
+export const searchProductbyName = async (
+  q: string,
+  page: number | undefined
+) => {
+  let data;
+  let currentpage = "";
+  if (page !== undefined) {
+    currentpage += `&page=${page}`;
+  }
+  const res = await axiosInstance
+    .get<ProductSearchResponse>("/search-products?keys=" + q + currentpage)
+    .then((res) => (data = res.data))
     .catch();
   return data;
 };

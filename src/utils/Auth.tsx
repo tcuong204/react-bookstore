@@ -30,15 +30,19 @@ export const getUser = async () => {
     return;
   }
   let data;
-  const response = await axiosInstance
-    .get("/getUserInfo", {
-      headers: { Authorization: "Bearer " + token },
-    })
-    .then((response) => {
-      data = response.data.userData;
-    })
-    .catch();
-  return data;
+  try {
+    const response = await axiosInstance
+      .get("/getUserInfo", {
+        headers: { Authorization: "Bearer " + token },
+      })
+      .then((response) => {
+        data = response.data.userData;
+      })
+      .catch();
+  } catch {
+  } finally {
+    return data;
+  }
 };
 export const logout = () => {
   // const router = useRouter()

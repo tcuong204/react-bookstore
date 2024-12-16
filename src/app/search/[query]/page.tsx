@@ -4,33 +4,45 @@ import {
   getProductbyPage,
   Product,
   ProductResponse,
+  ProductSearchResponse,
+  ResultSearchProduct,
+  searchProductbyName,
 } from "@/utils/ProductUtils";
 import { ConfigProvider, Divider, Pagination, Rate } from "antd";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function AllProduct() {
-  const [product, setProduct] = useState<ProductResponse | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const getProducts = async () => {
-    const data = await getProductbyPage(currentPage);
-    if (data) {
-      setProduct(data);
+  const pathname = usePathname();
+  const param = pathname.split("/").pop();
+  const [result, setResult] = useState<ProductSearchResponse | undefined>(
+    undefined
+  );
+  const getResult = async () => {
+    if (param?.length === 0) {
+      return;
     }
+    const filteredProducts = await searchProductbyName(param, currentPage);
+    setResult(filteredProducts);
   };
   useEffect(() => {
-    getProducts();
+    getResult();
   }, [currentPage]);
   return (
     <>
       <div className="flex justify-center bg-grayBg">
         <div className="w-[72%] bg-[#fff] rounded-lg mt-[1rem] ">
-          <div className="p-4 bg-[#FCDDEF]">
-            <b>TẤT CẢ SẢN PHẨM</b>
+          <div className="p-4 ">
+            <span>
+              <b>Kết quả</b> cho "{param}": <span>({result?.data.length} </span>
+              Sản phẩm)
+            </span>
           </div>
           <div className="grid grid-cols-5">
-            {product?.products?.map((value, index) => (
-              <Link href={`detail-product/${value.id}`}>
+            {result?.data.map((value, index) => (
+              <Link href={`/detail-product/${value.id}`}>
                 <div key={index} className="p-3 font-serif">
                   <div className="hover:shadow-md hover:cursor-pointer p-3">
                     <div>
@@ -52,9 +64,6 @@ export default function AllProduct() {
                         style={{ fontSize: "12px" }}
                       />
                       <Divider type="vertical" />
-                      <span className="text-[14px]">
-                        Đã bán <span>{value.soldCount}</span>
-                      </span>
                     </div>
                   </div>
                 </div>
@@ -68,7 +77,7 @@ export default function AllProduct() {
           <Pagination
             align="center"
             defaultCurrent={1}
-            total={product?.pagination.totalItems}
+            total={result?.pagination.totalItems}
             onChange={(e) => setCurrentPage(e)}
           />
         </ConfigProvider>

@@ -8,15 +8,16 @@ import {
   Space,
 } from "antd";
 import { useEffect, useState } from "react";
-import { Cart, themeRadio } from "../shopping-cart/page";
+import { themeRadio } from "../shopping-cart/page";
 import axiosInstance from "@/axios/axiosConfig";
 import { CustomButton } from "@/utils/CustomButton";
 import Footer from "@/Components/Footer";
 import { Address, getAddress } from "@/utils/AddressUtils";
 import { useRouter } from "next/navigation";
+import { Cart, useCart } from "@/utils/CartContext";
 
 export default function Payment() {
-  const [cart, setCart] = useState<Cart | null>(null);
+  const { cart, setCart } = useCart();
   const [method, setMethod] = useState<"bank_transfer" | "cash_on_delivery">(
     "cash_on_delivery"
   );

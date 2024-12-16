@@ -20,7 +20,6 @@ export function HotDeal() {
   useEffect(() => {
     getProducts();
   }, []);
-  console.log(product);
 
   return (
     <section id="hot-deal" className="transition delay-0 duration-300 ease-in">
@@ -37,23 +36,25 @@ export function HotDeal() {
           </div>
           <div className="grid grid-cols-5">
             {product?.products?.map((value, index) => (
-              <Link href={`detail-product/${value.id}`}>
-                <div key={index} className="p-3 font-serif">
-                  <div className="hover:shadow-md hover:cursor-pointer p-3">
-                    <div>
-                      <img src={value.image} loading="lazy"></img>
-                    </div>
-                    <div className="flex flex-col justify-between h-[87px] mt-[0.5rem]">
-                      <h6 className="overflow-text  text-[0.78rem]">
-                        {value.name}
-                      </h6>
-                      <p className="price !text-[18px] !pt-0">
-                        {value.price.toLocaleString("en-US")}
-                      </p>
+              <div key={index}>
+                <Link href={`detail-product/${value.id}`}>
+                  <div key={index} className="p-3 font-serif">
+                    <div className="hover:shadow-md hover:cursor-pointer p-3">
+                      <div>
+                        <img src={value.image} loading="lazy"></img>
+                      </div>
+                      <div className="flex flex-col justify-between h-[87px] mt-[0.5rem]">
+                        <h6 className="overflow-text  text-[0.78rem]">
+                          {value.name}
+                        </h6>
+                        <p className="price !text-[18px] !pt-0">
+                          {value.price.toLocaleString("en-US")}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Link>
+                </Link>
+              </div>
             ))}
           </div>
           <div className="flex justify-center items-center pb-[1rem]">
