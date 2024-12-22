@@ -25,7 +25,7 @@ const items: MenuItem[] = [
     icon: (
       <img src="https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/icon_user_info/orders.svg"></img>
     ),
-    label: "Đơn hàng của tôi",
+    label: <Link href="/account/orders">Đơn hàng của tôi</Link>,
   },
 ];
 
@@ -51,7 +51,7 @@ export default function AccountLayout({
   return (
     <div className="flex justify-center bg-[#ccc] w-full p-4">
       <div className="flex justify-center w-[72%] p-4 rounded-lg bg-[#fff]">
-        <div className="w-[25%] h-[500px] ">
+        <div className="w-[25%] h-[900px] ">
           <div className="flex justify-center">
             <img
               src="https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/icon_rank_silver.png"

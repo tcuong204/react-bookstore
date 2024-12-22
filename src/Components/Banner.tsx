@@ -8,7 +8,7 @@ export default function Banner() {
         <div className="w-[72%]">
           <div className="flex p-3">
             <CustomSwiper />
-            <div className="ml-[8px]">
+            <div className="ml-[16px] mt-[8px]">
               <Link href="all-product">
                 <img
                   src="https://cdn0.fahasa.com/media/wysiwyg/Thang-12-2024/TrangUuDaiKhoTienMatT12_392x156_1.jpg"
@@ -57,7 +57,7 @@ export default function Banner() {
                 <img
                   src="https://cdn0.fahasa.com/media/wysiwyg/Thang-12-2024/SmallBanner_T12_310x210.png"
                   alt=""
-                  className="w-[100%]"
+                  className="w-[95%]"
                 ></img>
               </Link>
             </div>

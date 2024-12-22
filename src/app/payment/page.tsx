@@ -15,9 +15,25 @@ import Footer from "@/Components/Footer";
 import { Address, getAddress } from "@/utils/AddressUtils";
 import { useRouter } from "next/navigation";
 import { Cart, useCart } from "@/utils/CartContext";
+interface CartItem {
+  productId: number;
+  name: string;
+  price: number;
+  originalPrice: number;
+  image: string;
+  quantity: number;
+  totalPrice: number;
+}
 
+interface CheckOut {
+  message: string;
+  items: CartItem[];
+  totalAmount: number;
+  totalQuantity: number;
+  shippingFee: number;
+}
 export default function Payment() {
-  const { cart, setCart } = useCart();
+  const [checkout, setcheckout] = useState<CheckOut | null>(null);
   const [method, setMethod] = useState<"bank_transfer" | "cash_on_delivery">(
     "cash_on_delivery"
   );
@@ -25,9 +41,9 @@ export default function Payment() {
   const router = useRouter();
   const getCart = async () => {
     const res = await axiosInstance
-      .get<Cart>("/get-cart?userId=" + 1)
+      .get<CheckOut>("/checkout?userId=" + 1)
       .then((response) => {
-        setCart(response.data);
+        setcheckout(response.data);
       })
       .catch();
   };
@@ -68,6 +84,7 @@ export default function Payment() {
     getCart();
     getAddressUser();
   }, []);
+  console.log(checkout);
 
   return (
     <>
@@ -124,7 +141,7 @@ export default function Payment() {
         <div className="flex justify-center">
           <div className="bg-[#fff] w-[72%] p-4 mt-4">
             <b>KIỂM TRA ĐƠN HÀNG</b>
-            {cart?.cartItems.map((array, index) => (
+            {checkout?.items?.map((array, index) => (
               <>
                 <Divider style={{ marginTop: 6, marginBottom: 6 }} />
                 <div className="flex">
@@ -154,16 +171,59 @@ export default function Payment() {
                 </div>
               </>
             ))}
-            <div className="flex justify-center">
-              <CustomButton
-                className="w-[30%] "
-                onClick={() => createPayment()}
-                buttonText="THANH TOÁN"
-                buttonType="primary"
-                disabled={false}
-                htmlType="button"
-              />
+          </div>
+        </div>
+      </div>
+      <div className=" flex  justify-center ">
+        <div className="fixed z-10  w-[72%] bottom-0 bg-[#fff] h-[235px] shadow-inner shadow-[#ddd] rounded-lg">
+          <div className="flex h-[50%] justify-end">
+            <div className="p-4 flex flex-row">
+              <div>
+                <div>
+                  <p className="text-[1.1rem] mr-[3rem]">Thành tiền:</p>
+                </div>
+                <div>
+                  <span className="text-[1.1rem] mr-[3rem]">
+                    Phí vận chuyển:
+                  </span>
+                </div>
+                <div>
+                  <b className="text-[1.1rem] mr-[3rem]">Tổng số tiền:</b>
+                </div>
+              </div>
+              <div>
+                <div>
+                  <span className="text-[1.1rem] ">
+                    {checkout?.totalAmount.toLocaleString("en-US")}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[1.1rem] ">
+                    {checkout?.shippingFee.toLocaleString("en-US")}
+                  </span>
+                </div>
+                <div>
+                  <b className="text-[#F39801] text-[1.1rem]">
+                    {checkout?.shippingFee &&
+                      checkout.totalAmount &&
+                      (
+                        checkout?.totalAmount + checkout?.shippingFee
+                      ).toLocaleString("en-US")}
+                  </b>
+                </div>
+              </div>
             </div>
+          </div>
+          <Divider />
+          <div className="flex justify-center">
+            <CustomButton
+              className="w-[30%] "
+              onClick={() => createPayment()}
+              buttonText="XÁC NHẬN THANH TOÁN"
+              buttonType="primary"
+              disabled={false}
+              htmlType="button"
+            />
           </div>
         </div>
       </div>

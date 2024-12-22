@@ -1,12 +1,15 @@
 "use client";
 
-import { getAddress } from "@/utils/AddressUtils";
+import { Address, getAddress } from "@/utils/AddressUtils";
+import { getUser, User } from "@/utils/Auth";
 import { Divider } from "antd";
-import { Address } from "cluster";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const DeliveryAddress = () => {
   const [address, setAddress] = useState<Address[] | null>(null);
+  const router = useRouter();
   const getAddressUser = async () => {
     const data = await getAddress();
     if (data) {
@@ -23,9 +26,11 @@ const DeliveryAddress = () => {
       <div className="py-4 flex justify-between">
         <b className="text-[#565555] text-[20px] font-[600]">Sổ địa chỉ</b>
         <div className="px-[1rem]">
-          <span className="text-[#2489F4] text-[16px] ">
-            + Thêm địa chỉ mới
-          </span>
+          <Link href="address/create-address">
+            <span className="text-[#2489F4] text-[16px]">
+              + Thêm địa chỉ mới
+            </span>
+          </Link>
         </div>
       </div>
       {address?.map((arr, index) => (
@@ -36,7 +41,7 @@ const DeliveryAddress = () => {
                 {arr.recipientName}
               </span>
               <Divider type="vertical" />
-              <b>{arr.phoneNumber}</b>
+              <span>{arr.phoneNumber}</span>
               <div className="ml-[0.5rem] font-[400]">
                 {arr.isDefault && (
                   <span className="text-[#2489F4] text-[14px] bg-[#D7E7FD] px-1 rounded-md">
@@ -57,9 +62,11 @@ const DeliveryAddress = () => {
               </span>
             </div>
           </div>
-          <div className="px-[2rem]">
-            <span className="text-[#2489F4] text-[16px] ">Sửa</span>
-          </div>
+          <Link href={`address/update-address/${arr.id}`}>
+            <div className="px-[2rem]">
+              <span className="text-[#2489F4] text-[16px] ">Sửa</span>
+            </div>
+          </Link>
         </div>
       ))}
     </div>

@@ -10,6 +10,8 @@ import debounce from "lodash.debounce";
 import axiosInstance from "@/axios/axiosConfig";
 import { useRouter } from "next/navigation";
 import { Cart, useCart } from "@/utils/CartContext";
+import { boolean } from "yup";
+import Link from "next/link";
 const plainOptions = ["Apple", "Pear", "Orange"];
 const defaultCheckedList = [""];
 export const themeRadio: ThemeConfig = {
@@ -34,6 +36,7 @@ export default function ShoppingCart() {
   const [checkedList, setCheckedList] = useState<string[]>(defaultCheckedList);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
+  const [isCheckedAll, setIsCheckedAll] = useState<true | false>();
   const checkAll = plainOptions.length === checkedList.length;
   const [messageApi, contextHolder] = message.useMessage();
   const indeterminate =
@@ -41,6 +44,12 @@ export default function ShoppingCart() {
   const onChange = (list: string[]) => {
     setCheckedList(list);
   };
+  const getCheckAll = async () => {
+    const res = axiosInstance
+      .get("get-checked-all-cartItems?userId=1")
+      .then((res) => setIsCheckedAll(res.data.isCheckedAll));
+  };
+
   const deleteCartItem = async (cartItemId: number) => {
     try {
       const res = axiosInstance
@@ -91,6 +100,7 @@ export default function ShoppingCart() {
         .patch("/update-cartitem", body)
         .then((res) => {
           if (res.status === 200) {
+            getCheckAll();
             getCart();
           }
         });
@@ -106,7 +116,7 @@ export default function ShoppingCart() {
     (cartItemId: number, quantity: number) => {
       updateCartQuantity(cartItemId, quantity);
     },
-    200
+    100
   );
   const getCart = async () => {
     const res = await axiosInstance
@@ -118,14 +128,36 @@ export default function ShoppingCart() {
   };
   useEffect(() => {
     getCart();
+    getCheckAll();
   }, []);
-  const onCheckAllChange: CheckboxProps["onChange"] = (e) => {
-    setCheckedList(e.target.checked ? plainOptions : []);
+  const onCheckAllChange: CheckboxProps["onChange"] = async (e) => {
+    let body = {
+      userId: 1,
+      isChecked: e.target.checked,
+    };
+    try {
+      setIsLoading(true);
+      const res = await axiosInstance
+        .patch("check-all-cartitem", body)
+        .then((res) => {
+          setIsCheckedAll(e.target.checked);
+          if (res.status === 200) {
+            getCart();
+          }
+        });
+    } catch (error) {
+      console.error("Failed to update cart quantity:", error);
+    } finally {
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 500);
+    }
   };
+
   return (
     <>
       <div className="flex justify-center bg-[#F0F0F0] font-nunito">
-        <div className="p-2   w-[72%]">
+        <div className="p-2   w-[73%]">
           <div className="my-[0.5em]">
             <span className="font-[500] text-grayText font-nunito  leading-5  ml-[0.5em] text-[20px]">
               GIỎ HÀNG ({cart?.totalQuantity} sản phẩm)
@@ -158,14 +190,13 @@ export default function ShoppingCart() {
                 <div className="p-2   w-[72%] ">
                   <ConfigProvider theme={themeRadio}>
                     <div className="flex p-2 w-full bg-[#fff] rounded-md">
-                      <div className="w-[68%] flex items-center">
+                      <div className="w-[67%] flex items-center ml-[0.5rem]">
                         <Checkbox
-                          indeterminate={indeterminate}
                           onChange={onCheckAllChange}
-                          checked={checkAll}
+                          checked={isCheckedAll}
                           className="color-[#fff]"
                         >
-                          Check all
+                          <p>Chọn tất cả</p>
                         </Checkbox>
                       </div>
                       <div className="flex justify-between w-[27%]">
@@ -174,7 +205,7 @@ export default function ShoppingCart() {
                       </div>
                     </div>
 
-                    <div className="bg-[#fff] mt-[1rem] min-h-[450px]">
+                    <div className="bg-[#fff] mt-[1rem] min-h-[450px] p-4 rounded-lg">
                       <Spin spinning={isLoading}>
                         {cart?.cartItems?.map((a, index) => (
                           <div key={index}>
@@ -200,7 +231,9 @@ export default function ShoppingCart() {
                               ></img>
                               <div className="flex flex-col justify-between basis-[48%]">
                                 <div>
-                                  <a>{a.name}</a>
+                                  <Link href={`/detail-product/${a.productId}`}>
+                                    {a.name}
+                                  </Link>
                                 </div>
                                 <div className="flex">
                                   <b>{a.price?.toLocaleString("en-US")}đ</b>
@@ -271,7 +304,7 @@ export default function ShoppingCart() {
                     </div>
                   </ConfigProvider>
                 </div>
-                <div className="w-[28%]  mt-[4.5rem] font-nunito">
+                <div className="w-[28%]  mt-[4rem] font-nunito">
                   <div className="bg-[#fff] rounded-md">
                     <div className="p-4">
                       <p className="font-400 ">Thành tiền</p>
@@ -290,7 +323,12 @@ export default function ShoppingCart() {
                         onClick={() => router.push("/payment")}
                         buttonText="THANH TOÁN"
                         buttonType="primary"
-                        disabled={false}
+                        disabled={
+                          cart?.cartItems.filter((a) => a.isChecked === true)
+                            .length === 0
+                            ? true
+                            : false
+                        }
                         htmlType="button"
                       />
                     </div>

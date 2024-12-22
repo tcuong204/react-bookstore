@@ -12,6 +12,8 @@ const AccountParamPage = () => {
         return <MyOrders />;
       case "address":
         return <DeliveryAddress />;
+      case "orders":
+        return <MyOrders />;
       default:
         return <div>Nội dung không tồn tại.</div>;
     }

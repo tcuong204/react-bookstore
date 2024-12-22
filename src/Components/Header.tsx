@@ -33,6 +33,7 @@ import {
   ResultSearchProduct,
   searchProductbyName,
 } from "@/utils/ProductUtils";
+import { CategoriesResponse, getAllCategories } from "@/utils/Categories";
 const Menu = () => {};
 const { Text } = Typography;
 export default function Header() {
@@ -44,21 +45,36 @@ export default function Header() {
   const [result, setResult] = useState<ProductSearchResponse | undefined>(
     undefined
   );
+  const [categories, setCategories] = useState<CategoriesResponse>();
   const [q, setQ] = useState("");
+  const [hoveredMenu, setHoveredMenu] = useState<string | null>(null);
+
+  const handleMouseEnter = (menuId: string) => {
+    setHoveredMenu(menuId);
+  };
+
   const onChange = (data: string) => {
     setQ(data);
   };
+  const getCategories = async () => {
+    const res = await getAllCategories();
+    if (res) {
+      setCategories(res);
+    }
+  };
+
   const getResult = async () => {
     if (q.length === 0) {
       return;
     }
     const filteredProducts = await searchProductbyName(q, undefined);
-    console.log(filteredProducts);
 
     setResult(filteredProducts);
   };
   const onSearch = (q: string) => {
-    router.push(`/search/${q}`);
+    if (q === "") {
+      router.push(`/all-product`);
+    } else router.push(`/search/${q}`);
   };
   const getCart = async () => {
     const res = await axiosInstance
@@ -76,10 +92,13 @@ export default function Header() {
   };
   useEffect(() => {
     getCart();
-    setIsLogin(isLoggedIn);
-    GetDetailUser();
     getResult();
   }, [q]);
+  useEffect(() => {
+    getCategories();
+    setIsLogin(isLoggedIn);
+    GetDetailUser();
+  }, []);
   const PoperContentNoti = (
     <>
       <div className="p-4 flex justify-center">
@@ -202,20 +221,20 @@ export default function Header() {
         <p onClick={() => router.push("/account")}>{user?.firstName}</p>
       </div>
       <hr />
-      <div className="p-4 flex items-center">
+      <div className="p-4 flex items-center cursor-pointer hover:bg-[#eee] rounded-lg">
         <img src="https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/ico_bill_gray.svg"></img>
-        <p>Đơn hàng của tôi</p>
+        <p onClick={() => router.push("/account/orders")}>Đơn hàng của tôi</p>
       </div>
       <hr />
-      <div className="p-4 flex items-center cursor-pointer">
+      <div className="p-4 flex items-center cursor-pointer hover:bg-[#eee] rounded-lg">
         <img src="https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/ico_logout_gray.svg"></img>
         <p onClick={logout}>Đăng xuất</p>
       </div>
     </>
   );
   return (
-    <div className="flex justify-center bg-[#fff]">
-      <div className="p-2  flex justify-between w-[72%] items-center">
+    <div className="flex justify-center bg-[#fff] relative">
+      <div className="p-2  flex justify-between w-[72%] items-center relative">
         <Link href="/">
           <img
             src="https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/fahasa-logo.png"
@@ -223,9 +242,37 @@ export default function Header() {
             alt=""
           />
         </Link>
-        <div className="flex justify-between p-2 items-center">
+        <div className="flex justify-between p-2 items-center menu-1">
           <img src="https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/ico_menu.svg"></img>
           <img src="https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/icon_seemore_gray.svg"></img>
+          <div className="menu-2 ">
+            <div className="flex">
+              <div className="w-[40%]">
+                <p className="text-[#7A7E7F] text-[20px] p-4">
+                  DANH MỤC SẢN PHẨM
+                </p>
+                {categories?.categories.map((a, index) => (
+                  <div key={index}>
+                    <div
+                      className="p-4 submenu rounded-lg hover:bg-[#ccc]"
+                      onMouseEnter={() => setHoveredMenu(a.name)}
+                    >
+                      {a.name}
+                      <div className="menu-3">
+                        {a.name === hoveredMenu &&
+                          a.topics.map((a, index) => (
+                            <div key={index}>
+                              <div className="submenu-2">{a.name}</div>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <Divider type="vertical" style={{ height: 225 }} />
+            </div>
+          </div>
         </div>
         <div className="flex items-center p-2">
           <ConfigProvider

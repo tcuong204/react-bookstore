@@ -230,7 +230,7 @@ export const LoginAndRegisterForm: React.FC<LoginAndRegisterFormProps> = ({
                         visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
                       }
                       visibilityToggle={passwordVisible}
-                      autoComplete="new-password"
+                      // autoComplete="off"
                     />
                   </Form.Item>
                   <div style={{ textAlign: "right", marginBottom: "16px" }}>
@@ -265,6 +265,7 @@ export const LoginAndRegisterForm: React.FC<LoginAndRegisterFormProps> = ({
           </TabPane>
         </Tabs>
       </ConfigProvider>
+      {contextHolder}
     </>
   );
 };

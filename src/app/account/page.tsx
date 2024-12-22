@@ -38,21 +38,9 @@ const items: MenuItem[] = [
 ];
 
 export default function Account() {
-  const [user, setUser] = useState<User | null>(null);
-  const GetDetailUser = async () => {
-    const data = await getUser();
-    if (data) {
-      setUser(data);
-    }
-  };
-  useEffect(() => {
-    GetDetailUser();
-  }, []);
-  console.log(user);
-
   return (
     <>
-      <UserInfo user={user} />
+      <UserInfo />
     </>
   );
 }

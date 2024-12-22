@@ -3,6 +3,7 @@ import "./globals.css";
 import Header from "@/Components/Header";
 import Footer from "@/Components/Footer";
 import { CartProvider } from "@/utils/CartContext";
+import { ConfigProvider } from "antd";
 
 export const metadata: Metadata = {
   title: "Book Store",
@@ -17,17 +18,23 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap"
           rel="stylesheet"
         />
       </head>
       <body className="">
-        <CartProvider>
-          <Header />
-          {children}
-          <Footer />
-        </CartProvider>
+        <ConfigProvider theme={{ token: { colorPrimary: "#C62027" } }}>
+          <CartProvider>
+            <Header />
+            <div className="children">{children}</div>
+            <div className="footer">
+              <Footer />
+            </div>
+          </CartProvider>
+        </ConfigProvider>
       </body>
     </html>
   );
