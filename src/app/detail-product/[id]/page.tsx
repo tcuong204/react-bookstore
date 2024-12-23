@@ -73,7 +73,11 @@ export default function DetailProductt() {
             <CustomButton
               className="w-full "
               onClick={() => {
-                addToCart(product?.id, quantity);
+                if (user !== null) {
+                  addToCart(product?.id, quantity);
+                } else {
+                  messageApi.error("Bạn cần đăng nhập !");
+                }
               }}
               buttonText="Thêm vào giỏ hàng"
               buttonType="default"
@@ -83,8 +87,12 @@ export default function DetailProductt() {
             <CustomButton
               className="w-full ml-[4px]"
               onClick={() => {
-                addToCart(product?.id, quantity);
-                router.push(`/shopping-cart/${user?.id}`);
+                if (user !== null) {
+                  addToCart(product?.id, quantity);
+                  router.push(`/shopping-cart/${user?.id}`);
+                } else {
+                  messageApi.error("Bạn cần đăng nhập !");
+                }
               }}
               buttonText="Mua ngay"
               buttonType="primary"
@@ -239,6 +247,7 @@ export default function DetailProductt() {
           </div>
         </div>
       </div>
+      {contextHolder}
     </>
   );
 }
