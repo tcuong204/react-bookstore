@@ -1,8 +1,10 @@
 "use client";
 import axiosInstance from "@/axios/axiosConfig";
+import { getUser, User } from "@/utils/Auth";
 import { Cart, useCart } from "@/utils/CartContext";
 import { CustomButton } from "@/utils/CustomButton";
 import { DetailProduct, getDetailProduct } from "@/utils/ProductUtils";
+import { useUser } from "@/utils/UserContext";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { Divider, Image, message } from "antd";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -16,6 +18,7 @@ export default function DetailProductt() {
   const pathname = usePathname();
   const param = pathname.split("/").pop();
   const router = useRouter();
+  const { user, setUser } = useUser();
   const getProduct = async () => {
     const data = await getDetailProduct(Number(param));
     if (data) setProduct(data);
@@ -28,13 +31,14 @@ export default function DetailProductt() {
       })
       .catch();
   };
+
   const addToCart = async (productId: number | undefined, quantity: number) => {
     const body = {
-      userId: 1,
+      userId: user?.id,
       productId: productId,
       quantity: quantity,
     };
-    const res = axiosInstance
+    const res = await axiosInstance
       .post<Cart>("/add-to-cart", body)
       .then((res) => {
         if (res.status === 200) {
@@ -80,7 +84,7 @@ export default function DetailProductt() {
               className="w-full ml-[4px]"
               onClick={() => {
                 addToCart(product?.id, quantity);
-                router.push("/shopping-cart");
+                router.push(`/shopping-cart/${user?.id}`);
               }}
               buttonText="Mua ngay"
               buttonType="primary"

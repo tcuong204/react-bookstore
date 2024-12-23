@@ -1,5 +1,6 @@
 "use client";
 import { getUser, User } from "@/utils/Auth";
+import { useUser } from "@/utils/UserContext";
 import { ConfigProvider, Divider, GetProp, Menu, MenuProps } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -34,20 +35,9 @@ export default function AccountLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [user, setUser] = useState<User | null>(null);
   const pathname = usePathname();
   const param = pathname.split("/").pop();
-  console.log(param);
-
-  const GetDetailUser = async () => {
-    const data = await getUser();
-    if (data) {
-      setUser(data);
-    }
-  };
-  useEffect(() => {
-    GetDetailUser();
-  }, []);
+  const { user, setUser } = useUser();
   return (
     <div className="flex justify-center bg-[#ccc] w-full p-4">
       <div className="flex justify-center w-[72%] p-4 rounded-lg bg-[#fff]">

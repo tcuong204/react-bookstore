@@ -61,11 +61,12 @@ export interface OrdersData {
   orders: Order[];
 }
 export const getAllOrders = async (
-  status: "" | "processing" | "shipping" | "returned"
+  status: "" | "processing" | "shipping" | "returned",
+  id: number | undefined
 ) => {
   let data;
   const res = await axiosInstance
-    .get("/get-my-orders?userId=1&status=" + status)
+    .get(`/get-my-orders?userId=${id}&status=` + status)
     .then((res) => {
       data = res.data.orders;
     });

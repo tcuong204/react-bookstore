@@ -60,7 +60,7 @@ export function HotDeal() {
           <div className="flex justify-center items-center pb-[1rem]">
             <CustomButton
               className="w-[210px] h-[40px] !font-serif border-2 !text-[12px] !font-[550] "
-              onClick={() => router.push("/all-product")}
+              onClick={() => router.push("/products")}
               buttonText="Xem thêm"
               buttonType="default"
               disabled={false}

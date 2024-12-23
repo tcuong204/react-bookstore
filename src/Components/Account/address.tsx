@@ -2,6 +2,7 @@
 
 import { Address, getAddress } from "@/utils/AddressUtils";
 import { getUser, User } from "@/utils/Auth";
+import { useUser } from "@/utils/UserContext";
 import { Divider } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -10,8 +11,9 @@ import { useEffect, useState } from "react";
 const DeliveryAddress = () => {
   const [address, setAddress] = useState<Address[] | null>(null);
   const router = useRouter();
+  const { user, setUser } = useUser();
   const getAddressUser = async () => {
-    const data = await getAddress();
+    const data = await getAddress(user?.id);
     if (data) {
       setAddress(data);
     }
@@ -19,8 +21,6 @@ const DeliveryAddress = () => {
   useEffect(() => {
     getAddressUser();
   }, []);
-  console.log(address);
-
   return (
     <div className="font-nunito">
       <div className="py-4 flex justify-between">
@@ -34,7 +34,7 @@ const DeliveryAddress = () => {
         </div>
       </div>
       {address?.map((arr, index) => (
-        <div className="flex justify-between">
+        <div key={index} className="flex justify-between">
           <div className="font-nunito">
             <div className="font-bold flex items-center">
               <span className="text-[13px] font-bold text-grayText">

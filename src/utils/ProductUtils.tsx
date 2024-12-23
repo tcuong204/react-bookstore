@@ -89,6 +89,14 @@ export const getProductbyPage = async (page: number) => {
     .catch();
   return data;
 };
+export const getProductbyCategory = async (page: number, query: string) => {
+  let data;
+  const res = await axiosInstance
+    .get("/get-products?limit=10&page=" + page)
+    .then((res) => (data = res.data))
+    .catch();
+  return data;
+};
 export const getAllProducts = async () => {
   let data;
   const res = await axiosInstance

@@ -8,7 +8,7 @@ import { DeleteFilled, MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { getUser } from "@/utils/Auth";
 import debounce from "lodash.debounce";
 import axiosInstance from "@/axios/axiosConfig";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Cart, useCart } from "@/utils/CartContext";
 import { boolean } from "yup";
 import Link from "next/link";
@@ -36,6 +36,7 @@ export default function ShoppingCart() {
   const [checkedList, setCheckedList] = useState<string[]>(defaultCheckedList);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
+  const param = useParams();
   const [isCheckedAll, setIsCheckedAll] = useState<true | false>();
   const checkAll = plainOptions.length === checkedList.length;
   const [messageApi, contextHolder] = message.useMessage();
@@ -46,7 +47,7 @@ export default function ShoppingCart() {
   };
   const getCheckAll = async () => {
     const res = axiosInstance
-      .get("get-checked-all-cartItems?userId=1")
+      .get("get-checked-all-cartItems?userId=" + param.id)
       .then((res) => setIsCheckedAll(res.data.isCheckedAll));
   };
 
@@ -120,7 +121,7 @@ export default function ShoppingCart() {
   );
   const getCart = async () => {
     const res = await axiosInstance
-      .get<Cart>("/get-cart?userId=" + 1)
+      .get<Cart>("/get-cart?userId=" + param.id)
       .then((response) => {
         setCart(response.data);
       })
@@ -179,7 +180,7 @@ export default function ShoppingCart() {
                     buttonText="Mua sắm ngay"
                     buttonType="primary"
                     htmlType="button"
-                    onClick={() => router.push("/all-product")}
+                    onClick={() => router.push("/products")}
                     className=""
                     disabled={false}
                   />
@@ -320,7 +321,7 @@ export default function ShoppingCart() {
                     <div className="p-4">
                       <CustomButton
                         className="w-full "
-                        onClick={() => router.push("/payment")}
+                        onClick={() => router.push(`/payment/${param.id}`)}
                         buttonText="THANH TOÁN"
                         buttonType="primary"
                         disabled={

@@ -25,6 +25,7 @@ export default function CreateAddress() {
   const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
   const [user, setUser] = useState<User | null>(null);
+  const [checked, setChecked] = useState<true | false>(false);
   const GetDetailUser = async () => {
     const data = await getUser();
     if (data) {
@@ -33,17 +34,17 @@ export default function CreateAddress() {
   };
 
   const onFinish: FormProps<Address>["onFinish"] = async (values) => {
-    const body = { ...values, userId: user?.id };
+    const body = { ...values, userId: user?.id, isDefault: checked };
     try {
       const res = await axiosInstance.post("/add-address", body);
       console.log(res);
 
       if (res.status === 201) {
         messageApi.success("Thêm địa chỉ thành công");
-        form.resetFields();
-        setTimeout(() => {
-          router.back();
-        }, 1000);
+        // form.resetFields();
+        // setTimeout(() => {
+        //   router.back();
+        // }, 1000);
       } else {
         messageApi.error("Thêm địa chỉ không thành công");
       }
@@ -116,9 +117,13 @@ export default function CreateAddress() {
             >
               <Input />
             </Form.Item>
-            <Form.Item<Address> name="isDefault" style={{ marginLeft: "34%" }}>
-              <Checkbox>Chọn làm địa chỉ mặc định</Checkbox>
-            </Form.Item>
+            <Checkbox
+              checked={checked}
+              onChange={(e) => setChecked(e.target.checked)}
+              className="ml-[33%]"
+            >
+              Chọn làm địa chỉ mặc định
+            </Checkbox>
 
             <Form.Item label={null} className="ml-[50%]">
               <CustomButton

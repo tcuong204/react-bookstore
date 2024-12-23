@@ -34,6 +34,7 @@ import {
   searchProductbyName,
 } from "@/utils/ProductUtils";
 import { CategoriesResponse, getAllCategories } from "@/utils/Categories";
+import { useUser } from "@/utils/UserContext";
 const Menu = () => {};
 const { Text } = Typography;
 export default function Header() {
@@ -41,13 +42,21 @@ export default function Header() {
   const router = useRouter();
   const [isLogin, setIsLogin] = useState<true | false>(false);
   const { cart, setCart } = useCart();
-  const [user, setUser] = useState<User | null>(null);
+  const { user, setUser } = useUser();
+  const [tabKey, setTabkey] = useState<string | undefined>();
   const [result, setResult] = useState<ProductSearchResponse | undefined>(
     undefined
   );
   const [categories, setCategories] = useState<CategoriesResponse>();
   const [q, setQ] = useState("");
   const [hoveredMenu, setHoveredMenu] = useState<string | null>(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const GetDetailUser = async () => {
+    const data = await getUser();
+    if (data) {
+      setUser(data);
+    }
+  };
 
   const handleMouseEnter = (menuId: string) => {
     setHoveredMenu(menuId);
@@ -73,32 +82,29 @@ export default function Header() {
   };
   const onSearch = (q: string) => {
     if (q === "") {
-      router.push(`/all-product`);
+      router.push(`/products`);
     } else router.push(`/search/${q}`);
   };
   const getCart = async () => {
     const res = await axiosInstance
-      .get<Cart>("/get-cart?userId=" + 1)
+      .get<Cart>("/get-cart?userId=" + user?.id)
       .then((response) => {
         setCart(response.data);
       })
       .catch();
   };
-  const GetDetailUser = async () => {
-    const data = await getUser();
-    if (data) {
-      setUser(data);
-    }
-  };
-  useEffect(() => {
-    getCart();
-    getResult();
-  }, [q]);
   useEffect(() => {
     getCategories();
     setIsLogin(isLoggedIn);
     GetDetailUser();
   }, []);
+  useEffect(() => {
+    if (user) {
+      getCart();
+    }
+    getResult();
+  }, [q, user]);
+
   const PoperContentNoti = (
     <>
       <div className="p-4 flex justify-center">
@@ -118,7 +124,10 @@ export default function Header() {
       <div className="p-4">
         <CustomButton
           className="w-full"
-          onClick={() => setOpenPopup(true)}
+          onClick={() => {
+            setOpenPopup(true);
+            setTabkey("1");
+          }}
           buttonText="Đăng nhập"
           buttonType="primary"
           disabled={false}
@@ -128,7 +137,10 @@ export default function Header() {
           <CustomButton
             buttonType="default"
             className="w-full mt-[4px]"
-            onClick={() => setOpenPopup(true)}
+            onClick={() => {
+              setOpenPopup(true);
+              setTabkey("2");
+            }}
             buttonText="Đăng ký"
             disabled={false}
             htmlType="button"
@@ -199,7 +211,7 @@ export default function Header() {
             <div className="flex items-center">
               <CustomButton
                 className="w-full "
-                onClick={() => router.push("/shopping-cart")}
+                onClick={() => router.push(`/shopping-cart/${user?.id}`)}
                 buttonText="Xem thêm"
                 buttonType="primary"
                 disabled={false}
@@ -221,20 +233,20 @@ export default function Header() {
         <p onClick={() => router.push("/account")}>{user?.firstName}</p>
       </div>
       <hr />
-      <div className="p-4 flex items-center cursor-pointer hover:bg-[#eee] rounded-lg">
+      <div className="p-4 flex items-center cursor-pointer  rounded-lg">
         <img src="https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/ico_bill_gray.svg"></img>
         <p onClick={() => router.push("/account/orders")}>Đơn hàng của tôi</p>
       </div>
       <hr />
-      <div className="p-4 flex items-center cursor-pointer hover:bg-[#eee] rounded-lg">
+      <div className="p-4 flex items-center cursor-pointer rounded-lg">
         <img src="https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/ico_logout_gray.svg"></img>
         <p onClick={logout}>Đăng xuất</p>
       </div>
     </>
   );
   return (
-    <div className="flex justify-center bg-[#fff] relative">
-      <div className="p-2  flex justify-between w-[72%] items-center relative">
+    <div className="flex justify-center bg-[#fff]  z-11">
+      <div className="p-2  flex justify-between w-[72%] items-center ">
         <Link href="/">
           <img
             src="https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/fahasa-logo.png"
@@ -242,35 +254,67 @@ export default function Header() {
             alt=""
           />
         </Link>
-        <div className="flex justify-between p-2 items-center menu-1">
+
+        <div
+          className="flex justify-between p-2 items-center menu-1"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
           <img src="https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/ico_menu.svg"></img>
           <img src="https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/icon_seemore_gray.svg"></img>
-          <div className="menu-2 ">
+          {isHovered && <div className="menu-overlay"> </div>}
+          <div
+            className="menu-2 rounded-lg"
+            onMouseLeave={() => setIsHovered(false)}
+          >
             <div className="flex">
-              <div className="w-[40%]">
+              <div className="w-[30%]">
                 <p className="text-[#7A7E7F] text-[20px] p-4">
                   DANH MỤC SẢN PHẨM
                 </p>
                 {categories?.categories.map((a, index) => (
                   <div key={index}>
                     <div
-                      className="p-4 submenu rounded-lg hover:bg-[#ccc]"
+                      className={`p-4 submenu rounded-lg ${
+                        a.name === hoveredMenu && "bg-[#ccc]"
+                      } font-nunito`}
                       onMouseEnter={() => setHoveredMenu(a.name)}
                     >
                       {a.name}
-                      <div className="menu-3">
-                        {a.name === hoveredMenu &&
-                          a.topics.map((a, index) => (
-                            <div key={index}>
-                              <div className="submenu-2">{a.name}</div>
-                            </div>
-                          ))}
-                      </div>
                     </div>
                   </div>
                 ))}
               </div>
               <Divider type="vertical" style={{ height: 225 }} />
+              <div className="menu-3 flex mt-[7%] font-nunito">
+                {categories?.categories
+                  .filter((a) => a.name === hoveredMenu)
+                  .map((a) =>
+                    a.topics.map((a, index) => (
+                      <div key={index}>
+                        <div className="">
+                          <div className="mr-[1rem]">
+                            <div className="flex justify-center">
+                              <b>{a.name}</b>
+                            </div>
+
+                            {a.genres.map((a, index) => (
+                              <div key={index}>
+                                <div className="flex justify-center mt-[1rem]">
+                                  <div>
+                                    <Link href={""} className="text-[#bbb]">
+                                      {a.name}
+                                    </Link>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+              </div>
             </div>
           </div>
         </div>
@@ -356,7 +400,10 @@ export default function Header() {
         </Popover>
         {isLogin ? (
           <Popover content={isLogin ? PopoverCartContent : PoperContent}>
-            <Link className="p-2 cursor-pointer" href="/shopping-cart">
+            <Link
+              className="p-2 cursor-pointer"
+              href={`/shopping-cart/${user?.id}`}
+            >
               <div className="flex justify-center">
                 <ConfigProvider
                   theme={{
@@ -419,7 +466,10 @@ export default function Header() {
         onCancel={() => setOpenPopup(false)}
         footer={null}
       >
-        <LoginAndRegisterForm setOpenPopup={() => setOpenPopup(false)} />
+        <LoginAndRegisterForm
+          setOpenPopup={() => setOpenPopup(false)}
+          tabKey={tabKey}
+        />
       </Modal>
     </div>
   );

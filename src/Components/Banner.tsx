@@ -9,13 +9,13 @@ export default function Banner() {
           <div className="flex p-3">
             <CustomSwiper />
             <div className="ml-[16px] mt-[8px]">
-              <Link href="all-product">
+              <Link href="products">
                 <img
                   src="https://cdn0.fahasa.com/media/wysiwyg/Thang-12-2024/TrangUuDaiKhoTienMatT12_392x156_1.jpg"
                   alt=""
                 ></img>
               </Link>
-              <Link href="all-product">
+              <Link href="products">
                 <img
                   src="https://cdn0.fahasa.com/media/wysiwyg/Thang-12-2024/392x156_vnpay_ngay_sale_t11.png"
                   alt=""
@@ -26,7 +26,7 @@ export default function Banner() {
           </div>
           <div className="flex mt-2 justify-between">
             <div>
-              <Link href="all-product">
+              <Link href="products">
                 <img
                   src="https://cdn0.fahasa.com/media/wysiwyg/Thang-12-2024/ctthang12_xakho_310x210.jpg"
                   alt=""
@@ -35,7 +35,7 @@ export default function Banner() {
               </Link>
             </div>
             <div>
-              <Link href="all-product">
+              <Link href="products">
                 <img
                   src="https://cdn0.fahasa.com/media/wysiwyg/Thang-12-2024/LDPScholastic_Resizehomepage_310x210_1.png"
                   alt=""
@@ -44,7 +44,7 @@ export default function Banner() {
               </Link>
             </div>
             <div>
-              <Link href="all-product">
+              <Link href="products">
                 <img
                   src="https://cdn0.fahasa.com/media/wysiwyg/Thang-12-2024/LDPScholastic_Resizehomepage_310x210_1.png"
                   alt=""
@@ -53,7 +53,7 @@ export default function Banner() {
               </Link>
             </div>
             <div>
-              <Link href="all-product">
+              <Link href="products">
                 <img
                   src="https://cdn0.fahasa.com/media/wysiwyg/Thang-12-2024/SmallBanner_T12_310x210.png"
                   alt=""

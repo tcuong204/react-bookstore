@@ -19,7 +19,7 @@ export default function SuccessNoti() {
               extra={[
                 <CustomButton
                   className="w-[30%] "
-                  onClick={() => router.push("/all-product")}
+                  onClick={() => router.push("/products")}
                   buttonText="Mua tiếp"
                   buttonType="primary"
                   disabled={false}

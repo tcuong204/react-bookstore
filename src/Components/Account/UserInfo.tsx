@@ -1,6 +1,7 @@
 import axiosInstance from "@/axios/axiosConfig";
 import { getUser, User } from "@/utils/Auth";
 import { CustomButton } from "@/utils/CustomButton";
+import { useUser } from "@/utils/UserContext";
 import { Form, FormProps, Input, message, Select } from "antd";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -17,20 +18,8 @@ const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (errorInfo) => {
 const UserInfo = () => {
   const [form] = Form.useForm();
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
+  const { user, setUser } = useUser();
   const [messageApi, contextHolder] = message.useMessage();
-  const GetDetailUser = async () => {
-    const data = await getUser();
-    if (data) {
-      form.setFieldsValue({
-        id: data?.id,
-        firstName: data?.firstName,
-        lastName: data?.lastName,
-        phoneNumber: data?.phoneNumber,
-      });
-      setUser(data);
-    }
-  };
   const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
     const body = { ...values, id: user?.id };
     try {
@@ -49,8 +38,13 @@ const UserInfo = () => {
   };
 
   useEffect(() => {
-    GetDetailUser();
-  }, []);
+    form.setFieldsValue({
+      id: user?.id,
+      firstName: user?.firstName,
+      lastName: user?.lastName,
+      phoneNumber: user?.phoneNumber,
+    });
+  }, [user]);
   return (
     <>
       <div className="py-[1rem]">

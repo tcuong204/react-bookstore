@@ -4,6 +4,7 @@ import Header from "@/Components/Header";
 import Footer from "@/Components/Footer";
 import { CartProvider } from "@/utils/CartContext";
 import { ConfigProvider } from "antd";
+import { UserProvider } from "@/utils/UserContext";
 
 export const metadata: Metadata = {
   title: "Book Store",
@@ -27,13 +28,15 @@ export default function RootLayout({
       </head>
       <body className="">
         <ConfigProvider theme={{ token: { colorPrimary: "#C62027" } }}>
-          <CartProvider>
-            <Header />
-            <div className="children">{children}</div>
-            <div className="footer">
-              <Footer />
-            </div>
-          </CartProvider>
+          <UserProvider>
+            <CartProvider>
+              <Header />
+              <div className="children">{children}</div>
+              <div className="footer">
+                <Footer />
+              </div>
+            </CartProvider>
+          </UserProvider>
         </ConfigProvider>
       </body>
     </html>

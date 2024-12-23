@@ -15,10 +15,10 @@ export interface Address {
 export interface ListAddress {
   listAddress: Address[];
 }
-export const getAddress = async () => {
+export const getAddress = async (id: number | undefined) => {
   let data;
   const res = await axiosInstance
-    .get("/get-address?userId=1")
+    .get("/get-address?userId=" + id)
     .then((res) => (data = res?.data?.address))
     .catch();
   return data;

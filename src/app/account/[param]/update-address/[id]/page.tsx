@@ -42,8 +42,6 @@ export default function UpdateAddress() {
       setAddress(data);
     }
   };
-  console.log(address);
-  console.log(checked);
 
   const onFinish: FormProps<Address>["onFinish"] = async (values) => {
     const body = { ...values, addressId: address?.id, isDefault: checked };
@@ -53,9 +51,9 @@ export default function UpdateAddress() {
 
       if (res.status === 200) {
         messageApi.success("Thêm địa chỉ thành công");
-        // setTimeout(() => {
-        //   router.back();
-        // }, 1000);
+        setTimeout(() => {
+          router.back();
+        }, 1000);
       } else {
         messageApi.error("Thêm địa chỉ không thành công");
       }

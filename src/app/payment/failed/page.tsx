@@ -18,14 +18,6 @@ export default function FailedNoti() {
               extra={[
                 <CustomButton
                   className="w-[30%] "
-                  onClick={() => router.push("/shopping-cart")}
-                  buttonText="Thanh toán lại"
-                  buttonType="primary"
-                  disabled={false}
-                  htmlType="button"
-                />,
-                <CustomButton
-                  className="w-[30%] "
                   onClick={() => router.push("/")}
                   buttonText="Về trang chủ"
                   buttonType="default"

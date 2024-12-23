@@ -72,22 +72,22 @@ export default () => {
         style={{ width: 800 }}
       >
         <SwiperSlide>
-          <Link href="/all-product">
+          <Link href="/products">
             <img src="https://cdn0.fahasa.com/media/magentothem/banner7/trangpatnership_840x320.jpg"></img>
           </Link>
         </SwiperSlide>
         <SwiperSlide>
-          <Link href="/all-product">
+          <Link href="/products">
             <img src="https://cdn0.fahasa.com/media/magentothem/banner7/herobanner_1512_840x320.jpg"></img>
           </Link>
         </SwiperSlide>
         <SwiperSlide>
-          <Link href="/all-product">
+          <Link href="/products">
             <img src="https://cdn0.fahasa.com/media/magentothem/banner7/BlindboxT1224_banner_840x320.jpg"></img>
           </Link>
         </SwiperSlide>
         <SwiperSlide>
-          <Link href="/all-product">
+          <Link href="/products">
             <img src="https://cdn0.fahasa.com/media/magentothem/banner7/laprap1224_laprap1124_slide_840x320.jpg"></img>
           </Link>
         </SwiperSlide>
