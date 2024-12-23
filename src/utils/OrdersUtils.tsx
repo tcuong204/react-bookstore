@@ -1,4 +1,5 @@
 import axiosInstance from "@/axios/axiosConfig";
+import { Tag } from "antd";
 
 export interface OrderDetailResponse {
   message: string;
@@ -97,25 +98,25 @@ export const Allstatus = [
   {
     label: "Đang xử lí",
     value: "processing",
-    color: "#00cbff",
+    color: "geekblue",
   },
   {
     label: "Đang vận chuyển",
     value: "shipping",
-    color: "#00ff77",
+    color: "gold",
   },
   {
     label: "Đã hủy",
     value: "returned",
-    color: "#ff005d",
+    color: "red",
   },
 ];
 export const getLabelStatus = (
   value: "processing" | "shipping" | "returned"
 ) => {
   return Allstatus.filter((a) => a.value === value).map((a, index) => (
-    <div key={index} className={`bg-[${a.color}] ml-[1rem] rounded-lg px-1`}>
+    <Tag color={a.color} key={index} className={`ml-[1rem] `}>
       {a.label}
-    </div>
+    </Tag>
   ));
 };

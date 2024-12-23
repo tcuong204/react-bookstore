@@ -29,10 +29,12 @@ interface Values {
 interface LoginAndRegisterFormProps {
   setOpenPopup: () => void;
   tabKey: string | undefined;
+  settabkey: (value: string) => void;
 }
 export const LoginAndRegisterForm: React.FC<LoginAndRegisterFormProps> = ({
   setOpenPopup,
   tabKey,
+  settabkey,
 }) => {
   const [passwordVisible, setPasswordVisible] = useState<true | false>(true);
   const form = Form.useForm();
@@ -95,7 +97,7 @@ export const LoginAndRegisterForm: React.FC<LoginAndRegisterFormProps> = ({
     {
       key: "1",
       label: (
-        <span style={{ color: "#C62027", fontFamily: "Nunito" }}>
+        <span style={{ color: "#C62027", fontFamily: "Nunito Sans" }}>
           Đăng nhập
         </span>
       ),
@@ -188,7 +190,11 @@ export const LoginAndRegisterForm: React.FC<LoginAndRegisterFormProps> = ({
     },
     {
       key: "2",
-      label: <span style={{ color: "#C62027" }}>Đăng ký</span>,
+      label: (
+        <span style={{ color: "#C62027", fontFamily: "Nunito Sans" }}>
+          Đăng ký
+        </span>
+      ),
       children: (
         // Nội dung Tab Đăng ký
         <Formik
@@ -277,13 +283,17 @@ export const LoginAndRegisterForm: React.FC<LoginAndRegisterFormProps> = ({
       ),
     },
   ];
-  console.log(tabKey);
   return (
     <>
       <ConfigProvider
         theme={{ components: { Tabs: { inkBarColor: "#C62027" } } }}
       >
-        <Tabs activeKey={tabKey} centered items={tabItems} />
+        <Tabs
+          activeKey={tabKey}
+          centered
+          items={tabItems}
+          onChange={(e) => settabkey(e)}
+        />
       </ConfigProvider>
       {contextHolder}
     </>

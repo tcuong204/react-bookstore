@@ -16,6 +16,7 @@ import { Address, getAddress } from "@/utils/AddressUtils";
 import { useParams, useRouter } from "next/navigation";
 import { Cart, useCart } from "@/utils/CartContext";
 import { themeRadio } from "../../shopping-cart/[id]/page";
+import Link from "next/link";
 interface CartItem {
   productId: number;
   name: string;
@@ -244,16 +245,42 @@ export default function Payment() {
             </div>
           </div>
           <Divider />
-          <div className="flex justify-center">
-            <CustomButton
-              className="w-[30%] "
-              onClick={() => createPayment()}
-              buttonText="XÁC NHẬN THANH TOÁN"
-              buttonType="primary"
-              disabled={false}
-              htmlType="button"
-            />
-          </div>
+          {address?.length === 0 ? (
+            <div className="flex justify-center">
+              <div>
+                <div className="flex">
+                  <span className="mr-[0.5rem]">
+                    Bạn nên tạo địa chỉ để hoàn thành thanh toán{" "}
+                  </span>
+                  <Link href={"/account/address/create-address"}>
+                    {" "}
+                    Thêm địa chỉ
+                  </Link>
+                </div>
+                <CustomButton
+                  className="w-[70%] "
+                  onClick={() => createPayment()}
+                  buttonText="XÁC NHẬN THANH TOÁN"
+                  buttonType="primary"
+                  disabled={true}
+                  htmlType="button"
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="flex justify-center">
+              <div>
+                <CustomButton
+                  className="w-full "
+                  onClick={() => createPayment()}
+                  buttonText="XÁC NHẬN THANH TOÁN"
+                  buttonType="primary"
+                  disabled={false}
+                  htmlType="button"
+                />
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>

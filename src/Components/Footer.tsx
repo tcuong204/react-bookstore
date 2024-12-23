@@ -20,13 +20,7 @@ export default function Footer() {
             <div>
               <h2 className="flex justify-center">DỊCH VỤ</h2>
             </div>
-            <div className="flex justify-center py-[1rem]">
-              <div className="hover:translate-x-6 transition delay-0 duration-300 ease-in ">
-                <Link href="/shopping-cart" className="text-[#000]">
-                  <h6 className="hover:text-[#ea7696]">Chuyển đến giỏ hàng</h6>
-                </Link>
-              </div>
-            </div>
+            <div className="flex justify-center py-[1rem]"></div>
             <div className="flex justify-center pb-[1rem]">
               <div className="hover:translate-x-6 transition delay-0 duration-300 ease-in ">
                 <Link href="/shopping-cart" className="text-[#000]">

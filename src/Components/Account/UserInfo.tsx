@@ -48,7 +48,9 @@ const UserInfo = () => {
   return (
     <>
       <div className="py-[1rem]">
-        <b>Hồ sơ cá nhân</b>
+        <b className="text-[#565555] text-[20px] font-[600]  font-nunito">
+          Hồ sơ cá nhân
+        </b>
       </div>
       <div className="">
         <Form

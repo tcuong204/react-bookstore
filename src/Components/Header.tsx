@@ -1,13 +1,5 @@
 "use client";
 import {
-  AppstoreAddOutlined,
-  BellOutlined,
-  DownOutlined,
-  SearchOutlined,
-  ShoppingCartOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
-import {
   AutoComplete,
   AutoCompleteProps,
   Badge,
@@ -104,7 +96,6 @@ export default function Header() {
     }
     getResult();
   }, [q, user]);
-
   const PoperContentNoti = (
     <>
       <div className="p-4 flex justify-center">
@@ -205,7 +196,7 @@ export default function Header() {
             <div>
               <p>Tổng cộng</p>
               <div className="price !pt-0 !pb-0 !text-[16px]">
-                {cart.totalAmount.toLocaleString("en-US")}đ
+                {cart.totalAmount?.toLocaleString("en-US")}đ
               </div>
             </div>
             <div className="flex items-center">
@@ -274,14 +265,16 @@ export default function Header() {
                 </p>
                 {categories?.categories.map((a, index) => (
                   <div key={index}>
-                    <div
-                      className={`p-4 submenu rounded-lg ${
-                        a.name === hoveredMenu && "bg-[#ccc]"
-                      } font-nunito`}
-                      onMouseEnter={() => setHoveredMenu(a.name)}
-                    >
-                      {a.name}
-                    </div>
+                    <Link href={`/search/categoryId=${a.id}`}>
+                      <div
+                        className={`p-4 submenu rounded-lg ${
+                          a.name === hoveredMenu && "bg-[#ccc]"
+                        } font-nunito`}
+                        onMouseEnter={() => setHoveredMenu(a.name)}
+                      >
+                        {a.name}
+                      </div>
+                    </Link>
                   </div>
                 ))}
               </div>
@@ -294,15 +287,19 @@ export default function Header() {
                       <div key={index}>
                         <div className="">
                           <div className="mr-[1rem]">
-                            <div className="flex justify-center">
-                              <b>{a.name}</b>
-                            </div>
-
+                            <Link href={`/search/topicId=${a.id}`}>
+                              <div className="flex justify-center">
+                                <b>{a.name}</b>
+                              </div>
+                            </Link>
                             {a.genres.map((a, index) => (
                               <div key={index}>
                                 <div className="flex justify-center mt-[1rem]">
                                   <div>
-                                    <Link href={""} className="text-[#bbb]">
+                                    <Link
+                                      href={`/search/genreId=${a.id}`}
+                                      className="text-[#bbb]"
+                                    >
                                       {a.name}
                                     </Link>
                                   </div>
@@ -444,7 +441,7 @@ export default function Header() {
                     <img src="https://cdn0.fahasa.com/skin/frontend/ma_vanese/fahasa/images/ico_account_gray.svg"></img>
                   </div>
                   <div className="leading-5 text-[#7A7E7F] text-[12px] font-serif">
-                    {user?.lastName}
+                    {user?.lastName ? user?.lastName : ""}
                   </div>
                 </div>
               </Link>
@@ -469,6 +466,7 @@ export default function Header() {
         <LoginAndRegisterForm
           setOpenPopup={() => setOpenPopup(false)}
           tabKey={tabKey}
+          settabkey={setTabkey}
         />
       </Modal>
     </div>

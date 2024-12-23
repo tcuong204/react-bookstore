@@ -3,7 +3,7 @@
 import { Address, getAddress } from "@/utils/AddressUtils";
 import { getUser, User } from "@/utils/Auth";
 import { useUser } from "@/utils/UserContext";
-import { Divider } from "antd";
+import { Divider, Tag } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -19,8 +19,11 @@ const DeliveryAddress = () => {
     }
   };
   useEffect(() => {
+    if (address?.length === 0) {
+      router.push("address/create-address");
+    }
     getAddressUser();
-  }, []);
+  }, [user]);
   return (
     <div className="font-nunito">
       <div className="py-4 flex justify-between">
@@ -33,42 +36,46 @@ const DeliveryAddress = () => {
           </Link>
         </div>
       </div>
-      {address?.map((arr, index) => (
-        <div key={index} className="flex justify-between">
-          <div className="font-nunito">
-            <div className="font-bold flex items-center">
-              <span className="text-[13px] font-bold text-grayText">
-                {arr.recipientName}
-              </span>
-              <Divider type="vertical" />
-              <span>{arr.phoneNumber}</span>
-              <div className="ml-[0.5rem] font-[400]">
-                {arr.isDefault && (
-                  <span className="text-[#2489F4] text-[14px] bg-[#D7E7FD] px-1 rounded-md">
-                    Địa chỉ mặc định
-                  </span>
-                )}
+      {address?.length === 0 ? (
+        <div>Bạn chưa có địa chỉ</div>
+      ) : (
+        address?.map((arr, index) => (
+          <div key={index} className="flex justify-between">
+            <div className="font-nunito">
+              <div className="font-bold flex items-center">
+                <span className="text-[13px] font-bold text-grayText">
+                  {arr.recipientName}
+                </span>
+                <Divider type="vertical" />
+                <span>{arr.phoneNumber}</span>
+                <div className="ml-[0.5rem] font-[400]">
+                  {arr.isDefault && (
+                    <Tag color="geekblue" className=" text-[14px]  ">
+                      Địa chỉ mặc định
+                    </Tag>
+                  )}
+                </div>
+              </div>
+              <div>
+                <span className="font-nunito text-[#7A7E7F] font-[400]">
+                  {arr.addressDetail}
+                </span>
+              </div>
+              <div>
+                <span className="font-nunito text-[#7A7E7F] font-[400]">
+                  {arr.ward},<span>{arr.district}, </span>
+                  {arr.city}
+                </span>
               </div>
             </div>
-            <div>
-              <span className="font-nunito text-[#7A7E7F] font-[400]">
-                {arr.addressDetail}
-              </span>
-            </div>
-            <div>
-              <span className="font-nunito text-[#7A7E7F] font-[400]">
-                {arr.ward},<span>{arr.district}, </span>
-                {arr.city}
-              </span>
-            </div>
+            <Link href={`address/update-address/${arr.id}`}>
+              <div className="px-[2rem]">
+                <span className="text-[#2489F4] text-[16px] ">Sửa</span>
+              </div>
+            </Link>
           </div>
-          <Link href={`address/update-address/${arr.id}`}>
-            <div className="px-[2rem]">
-              <span className="text-[#2489F4] text-[16px] ">Sửa</span>
-            </div>
-          </Link>
-        </div>
-      ))}
+        ))
+      )}
     </div>
   );
 };

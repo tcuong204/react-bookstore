@@ -46,7 +46,7 @@ export default function ShoppingCart() {
     setCheckedList(list);
   };
   const getCheckAll = async () => {
-    const res = axiosInstance
+    const res = await axiosInstance
       .get("get-checked-all-cartItems?userId=" + param.id)
       .then((res) => setIsCheckedAll(res.data.isCheckedAll));
   };
